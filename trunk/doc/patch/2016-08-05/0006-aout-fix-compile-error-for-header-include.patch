@@ -1,0 +1,25 @@
+From 6fd5033611f244db51121b67dd5d550665c234da Mon Sep 17 00:00:00 2001
+From: Xinzheng Zhang <zhangxzheng@gmail.com>
+Date: Mon, 11 Jul 2016 12:00:30 +0800
+Subject: [PATCH 06/73] aout: fix compile error for header include
+
+---
+ ijkmedia/ijksdl/ijksdl_aout.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijksdl/ijksdl_aout.c b/ijkmedia/ijksdl/ijksdl_aout.c
+index 5f1d62b..773f6d3 100644
+--- a/ijkmedia/ijksdl/ijksdl_aout.c
++++ b/ijkmedia/ijksdl/ijksdl_aout.c
+@@ -23,7 +23,7 @@
+ 
+ #include "ijksdl_aout.h"
+ #include <stdlib.h>
+-#include "ff_ffplay_def.h"
++#include "ijkplayer/ff_ffplay_def.h"
+ 
+ int SDL_AoutOpenAudio(SDL_Aout *aout, const SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
+ {
+-- 
+1.9.1
+

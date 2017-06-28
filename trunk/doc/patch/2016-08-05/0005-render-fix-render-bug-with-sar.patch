@@ -1,0 +1,38 @@
+From b220569e373c3870c883868ac8c6b882881b68af Mon Sep 17 00:00:00 2001
+From: Xinzheng Zhang <zhangxzheng@gmail.com>
+Date: Thu, 7 Jul 2016 12:33:15 +0800
+Subject: [PATCH 05/73] render: fix render bug with sar
+
+---
+ ijkmedia/ijksdl/gles2/renderer.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/ijkmedia/ijksdl/gles2/renderer.c b/ijkmedia/ijksdl/gles2/renderer.c
+index b9da26d..add92cb 100644
+--- a/ijkmedia/ijksdl/gles2/renderer.c
++++ b/ijkmedia/ijksdl/gles2/renderer.c
+@@ -248,16 +248,17 @@ static void IJK_GLES2_Renderer_Vertices_apply(IJK_GLES2_Renderer *renderer)
+ 
+     float width     = renderer->frame_width;
+     float height    = renderer->frame_height;
++
++    if (renderer->frame_sar_num > 0 && renderer->frame_sar_den > 0) {
++        width = width * renderer->frame_sar_num / renderer->frame_sar_den;
++    }
++
+     const float dW  = (float)renderer->layer_width	/ width;
+     const float dH  = (float)renderer->layer_height / height;
+     float dd        = 1.0f;
+     float nW        = 1.0f;
+     float nH        = 1.0f;
+ 
+-    if (renderer->frame_sar_num > 0 && renderer->frame_sar_den > 0) {
+-        width = width * renderer->frame_sar_num / renderer->frame_sar_den;
+-    }
+-
+     switch (renderer->gravity) {
+         case IJK_GLES2_GRAVITY_RESIZE_ASPECT_FILL:  dd = FFMAX(dW, dH); break;
+         case IJK_GLES2_GRAVITY_RESIZE_ASPECT:       dd = FFMIN(dW, dH); break;
+-- 
+1.9.1
+

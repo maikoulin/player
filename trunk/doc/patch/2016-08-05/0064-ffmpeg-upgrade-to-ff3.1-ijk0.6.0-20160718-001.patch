@@ -1,0 +1,53 @@
+From 07e79a8c5402454de9c3a85fd8db5c6b4a4577dd Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Tue, 19 Jul 2016 19:18:28 +0800
+Subject: [PATCH 64/73] ffmpeg: upgrade to ff3.1--ijk0.6.0--20160718--001
+
+---
+ init-android.sh                                                | 2 +-
+ init-ios.sh                                                    | 2 +-
+ ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/init-android.sh b/init-android.sh
+index d94d2c4..cff958a 100755
+--- a/init-android.sh
++++ b/init-android.sh
+@@ -18,7 +18,7 @@
+ # IJK_FFMPEG_UPSTREAM=git://git.videolan.org/ffmpeg.git
+ IJK_FFMPEG_UPSTREAM=https://github.com/Bilibili/FFmpeg.git
+ IJK_FFMPEG_FORK=https://github.com/Bilibili/FFmpeg.git
+-IJK_FFMPEG_COMMIT=ff3.1--ijk0.6.0--20160715--001
++IJK_FFMPEG_COMMIT=ff3.1--ijk0.6.0--20160718--001
+ IJK_FFMPEG_LOCAL_REPO=extra/ffmpeg
+ 
+ set -e
+diff --git a/init-ios.sh b/init-ios.sh
+index e4c1184..ee457aa 100755
+--- a/init-ios.sh
++++ b/init-ios.sh
+@@ -18,7 +18,7 @@
+ # IJK_FFMPEG_UPSTREAM=git://git.videolan.org/ffmpeg.git
+ IJK_FFMPEG_UPSTREAM=https://github.com/Bilibili/FFmpeg.git
+ IJK_FFMPEG_FORK=https://github.com/Bilibili/FFmpeg.git
+-IJK_FFMPEG_COMMIT=ff3.1--ijk0.6.0--20160715--001
++IJK_FFMPEG_COMMIT=ff3.1--ijk0.6.0--20160718--001
+ IJK_FFMPEG_LOCAL_REPO=extra/ffmpeg
+ 
+ IJK_GASP_UPSTREAM=https://github.com/Bilibili/gas-preprocessor.git
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
+index e06b632..0c46856 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
+@@ -34,7 +34,7 @@
+ #include "ijkplayer/version.h"
+ #include "libavformat/ijkavformat.h"
+ 
+-static const char *kIJKFFRequiredFFmpegVersion = "ff3.1--ijk0.6.0--20160715--001";
++static const char *kIJKFFRequiredFFmpegVersion = "ff3.1--ijk0.6.0--20160718--001";
+ 
+ @interface IJKFFMoviePlayerController()
+ 
+-- 
+1.9.1
+

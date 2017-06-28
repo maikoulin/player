@@ -1,0 +1,88 @@
+From 8e949bff3441f3d5ed990364a2d80d857865735e Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Sun, 12 Jun 2016 12:54:49 +0800
+Subject: [PATCH 05/14] ff_ffplay: apply swresample options
+
+---
+ ijkmedia/ijkplayer/ff_ffplay.c                   | 4 ++++
+ ijkmedia/ijkplayer/ijkplayer.h                   | 1 +
+ ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.h | 1 +
+ ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.m | 3 +++
+ 4 files changed, 9 insertions(+)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 4c63a81..4958bb4 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -1936,6 +1936,7 @@ static int audio_decode_frame(FFPlayer *ffp)
+         dec_channel_layout       != is->audio_src.channel_layout ||
+         af->frame->sample_rate   != is->audio_src.freq           ||
+         (wanted_nb_samples       != af->frame->nb_samples && !is->swr_ctx)) {
++        AVDictionary *swr_opts = NULL;
+         swr_free(&is->swr_ctx);
+         is->swr_ctx = swr_alloc_set_opts(NULL,
+                                          is->audio_tgt.channel_layout, is->audio_tgt.fmt, is->audio_tgt.freq,
+@@ -1949,6 +1950,9 @@ static int audio_decode_frame(FFPlayer *ffp)
+             swr_free(&is->swr_ctx);
+             return -1;
+         }
++        av_dict_copy(&swr_opts, ffp->swr_opts, 0);
++        av_opt_set_dict(is->swr_ctx, &swr_opts);
++        av_dict_free(&swr_opts);
+         is->audio_src.channel_layout = dec_channel_layout;
+         is->audio_src.channels       = av_frame_get_channels(af->frame);
+         is->audio_src.freq = af->frame->sample_rate;
+diff --git a/ijkmedia/ijkplayer/ijkplayer.h b/ijkmedia/ijkplayer/ijkplayer.h
+index d3c4b5c..ac90397 100644
+--- a/ijkmedia/ijkplayer/ijkplayer.h
++++ b/ijkmedia/ijkplayer/ijkplayer.h
+@@ -147,6 +147,7 @@ struct SDL_Vout;
+ #define IJKMP_OPT_CATEGORY_CODEC  FFP_OPT_CATEGORY_CODEC
+ #define IJKMP_OPT_CATEGORY_SWS    FFP_OPT_CATEGORY_SWS
+ #define IJKMP_OPT_CATEGORY_PLAYER FFP_OPT_CATEGORY_PLAYER
++#define IJKMP_OPT_CATEGORY_SWR    FFP_OPT_CATEGORY_SWR
+ 
+ 
+ void            ijkmp_global_init();
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.h b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.h
+index d3927b4..0870401 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.h
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.h
+@@ -27,6 +27,7 @@ typedef enum IJKFFOptionCategory {
+     kIJKFFOptionCategoryCodec  = 2,
+     kIJKFFOptionCategorySws    = 3,
+     kIJKFFOptionCategoryPlayer = 4,
++    kIJKFFOptionCategorySwr    = 5,
+ } IJKFFOptionCategory;
+ 
+ // for codec option 'skip_loop_filter' and 'skip_frame'
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.m b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.m
+index 1a76e99..6200873 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFOptions.m
+@@ -30,6 +30,7 @@
+     NSMutableDictionary *_formatOptions;
+     NSMutableDictionary *_codecOptions;
+     NSMutableDictionary *_swsOptions;
++    NSMutableDictionary *_swrOptions;
+ }
+ 
+ + (IJKFFOptions *)optionsByDefault
+@@ -60,12 +61,14 @@
+         _formatOptions      = [[NSMutableDictionary alloc] init];
+         _codecOptions       = [[NSMutableDictionary alloc] init];
+         _swsOptions         = [[NSMutableDictionary alloc] init];
++        _swrOptions         = [[NSMutableDictionary alloc] init];
+ 
+         _optionCategories   = [[NSMutableDictionary alloc] init];
+         _optionCategories[@(IJKMP_OPT_CATEGORY_PLAYER)] = _playerOptions;
+         _optionCategories[@(IJKMP_OPT_CATEGORY_FORMAT)] = _formatOptions;
+         _optionCategories[@(IJKMP_OPT_CATEGORY_CODEC)]  = _codecOptions;
+         _optionCategories[@(IJKMP_OPT_CATEGORY_SWS)]    = _swsOptions;
++        _optionCategories[@(IJKMP_OPT_CATEGORY_SWR)]    = _swrOptions;
+     }
+     return self;
+ }
+-- 
+1.9.1
+

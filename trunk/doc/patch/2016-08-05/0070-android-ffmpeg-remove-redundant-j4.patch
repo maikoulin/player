@@ -1,0 +1,26 @@
+From 613dcde5e1663380aa0f7c2392e3791b746b3864 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Tue, 26 Jul 2016 12:58:00 +0800
+Subject: [PATCH 70/73] android/ffmpeg: remove redundant -j4
+
+-j4 should be configure in do-detect-env.sh
+---
+ android/contrib/tools/do-compile-ffmpeg.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/android/contrib/tools/do-compile-ffmpeg.sh b/android/contrib/tools/do-compile-ffmpeg.sh
+index 860543a..d67fb28 100755
+--- a/android/contrib/tools/do-compile-ffmpeg.sh
++++ b/android/contrib/tools/do-compile-ffmpeg.sh
+@@ -310,7 +310,7 @@ echo "--------------------"
+ echo "[*] compile ffmpeg"
+ echo "--------------------"
+ cp config.* $FF_PREFIX
+-make -j4 $FF_MAKE_FLAGS > /dev/null
++make $FF_MAKE_FLAGS > /dev/null
+ make install
+ mkdir -p $FF_PREFIX/include/libffmpeg
+ cp -f config.h $FF_PREFIX/include/libffmpeg/config.h
+-- 
+1.9.1
+

@@ -1,0 +1,3015 @@
+Revision: 29066
+Author: chenyunhui
+Date: 2017年1月22日 11:13:46
+Message:
+Modify coding style.
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 28988
+Author: chenyunhui
+Date: 2017年1月19日 18:21:03
+Message:
+Add AES authentication for hls
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 28985
+Author: wuym
+Date: 2017年1月19日 17:18:29
+Message:
+modify to report cms code
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 28979
+Author: wuym
+Date: 2017年1月19日 16:41:32
+Message:
+add a new feature to report cms authentication code
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/IjkMediaPlayer.java
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 28975
+Author: huangzl
+Date: 2017年1月19日 16:19:03
+Message:
+disable hls stream reconnect when http read timeout because hls ts stream is not seekable
+***********
+修改日期：2017.01.19 16:19:03
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3463466 & bug3326469 直播重复播放2-3遍
+问题原因：hls的ts流无法seek,当ts读取出现异常，http重连后，会重新从ts的0位置开始读取，造成重复播放
+修改方法：取消hls的http重连机制，因为hls对于ts的连接读取失败后，会去连接读取下一个ts分片
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/http.c
+
+Revision: 28919
+Author: wuym
+Date: 2017年1月18日 15:45:42
+Message:
+update demo files to add new feature
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/InfoHudViewHolder.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/res/values/strings.xml
+
+Revision: 28842
+Author: wuym
+Date: 2017年1月17日 11:00:54
+Message:
+add to query the cap to play h265
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/IjkMediaPlayer.java
+
+Revision: 28830
+Author: wuym
+Date: 2017年1月17日 9:50:39
+Message:
+add to query the cap to play dolby
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffmsg.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 28647
+Author: wuym
+Date: 2017年1月12日 14:12:38
+Message:
+change count to timediff when a/v not sync
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 28554
+Author: wuym
+Date: 2017年1月10日 17:38:26
+Message:
+revert the optimized code
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 28553
+Author: wuym
+Date: 2017年1月10日 17:35:36
+Message:
+revert patch 28551
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/config.h
+
+Revision: 28552
+Author: wuym
+Date: 2017年1月10日 17:30:58
+Message:
+decrease the av diff to avoid video playing slowly when start playing
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 28551
+Author: wuym
+Date: 2017年1月10日 17:28:26
+Message:
+del the unused code
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/config.h
+
+Revision: 28395
+Author: wuym
+Date: 2017年1月6日 15:38:12
+Message:
+adjust the video decoding timediff
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 28390
+Author: wuym
+Date: 2017年1月6日 14:35:30
+Message:
+define the exception identfication to enhance code readability
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 28320
+Author: wuym
+Date: 2017年1月5日 13:46:01
+Message:
+add wsplayer-20161215-v1.3_r3
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161215-v1.3_r3.aar
+
+Revision: 28313
+Author: wuym
+Date: 2017年1月5日 10:37:57
+Message:
+add exception identification
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/IjkMediaPlayer.java
+
+Revision: 28281
+Author: wuym
+Date: 2017年1月4日 17:45:56
+Message:
+Modify to support fps judgement
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 28266
+Author: wuym
+Date: 2017年1月4日 17:26:44
+Message:
+add a new feature to recognize perference issue that cause a/v not sync
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 28260
+Author: wuym
+Date: 2017年1月4日 15:41:54
+Message:
+correct the soft decoder timediff
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 28187
+Author: huangzl
+Date: 2017年1月3日 9:53:34
+Message:
+retry 2 times to update the playlist if update failed for hls
+***********
+修改日期：2017.01.03 9:53:34
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3426977 & bug3467871 胡桃2直播概率加载黑一下然后马上继续播放
+问题原因：ijkplayer底层上报-110，cloudtv业务层播放重连，胡桃2没有最后帧，所以，重连加载时会黑一下
+修改方法：对hls的m3u8的playlist更新失败的情况，增加3次重试机会，每次重试间隔100ms
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 27961
+Author: wuym
+Date: 2016年12月28日 18:21:37
+Message:
+add to support reporting low network speed
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 27765
+Author: wuym
+Date: 2016年12月27日 15:58:21
+Message:
+del the unused log
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkplayer.c
+
+Revision: 27758
+Author: wuym
+Date: 2016年12月27日 15:23:59
+Message:
+report related code to distiguish codec and demuxer that isn't found
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/format.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 27304
+Author: wuym
+Date: 2016年12月22日 11:26:21
+Message:
+swap the dts and pts when dts is not increasing
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/avcodec.h
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 27127
+Author: wuym
+Date: 2016年12月20日 16:25:45
+Message:
+add to distinguish the frame drops between early and late
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffmsg.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 27124
+Author: wuym
+Date: 2016年12月20日 16:13:10
+Message:
+add IjkMediaPlayer API描述文档.pdf
+----
+Added : /wsijk/trunk/doc/IjkMediaPlayer API描述文档.pdf
+
+Revision: 27082
+Author: huangzl
+Date: 2016年12月19日 19:10:38
+Message:
+fixed hls seek issue if ijk master clock is Not a Number
+***********
+修改日期：2016.12.19 19:10:38
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：r26235修改记录的补充修改 回看短按seek时不精准问题
+问题原因：r26235方案需要依赖ijkplayer的播放时钟的准确性，如果Ijkplayer播放时钟没有更新到正确的值，也就是获取到的是（Not a Number）,
+					这个时候保存的ijkplayer的seek位移就会出错
+修改方法：针对ijkplayer的播放时钟的Not a Number情况，不使用新的seek优化方案，继续使用原有旧方案
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 27076
+Author: wuym
+Date: 2016年12月19日 17:51:00
+Message:
+add parameter to avoid complie error
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/build.gradle
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/build.gradle
+
+Revision: 27047
+Author: huangzl
+Date: 2016年12月19日 14:11:15
+Message:
+recreate wsplayer v1.3 release tag from newest trunk
+***********
+修改日期：2016.12.19 14:11:15
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建wsplayer v1.3 release tag分支
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-v1.3-release (Copy from path: /wsijk/trunk, Revision, 27046)
+
+Revision: 27046
+Author: huangzl
+Date: 2016年12月19日 14:06:12
+Message:
+delete wrong v1.3 release tag because more bugs fixed
+***********
+修改日期：2016.12.19 14:06:12
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：取消之前的v1.3 tag分支，因为存在bug，重新创建wsplayer v1.3 release tag分支
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/tags/wsplayer-v1.3-release
+
+Revision: 27045
+Author: huangzl
+Date: 2016年12月19日 14:04:54
+Message:
+delete not used debuging branch
+***********
+修改日期：2016.12.19 14:04:54
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：删除没用的调试分支
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/branches/br_debuging
+
+Revision: 27044
+Author: huangzl
+Date: 2016年12月19日 14:04:17
+Message:
+delete not used v1.1 branch
+***********
+修改日期：2016.12.19 14:04:54
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：删除没用的v1.1分支
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/branches/br_v1.1-release
+
+Revision: 27043
+Author: huangzl
+Date: 2016年12月19日 14:02:32
+Message:
+delete not used v1.3 branch
+***********
+修改日期：2016.12.19 14:04:54
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：删除没用的v1.3错误分支
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/branches/br_v1.3_release
+
+Revision: 26915
+Author: wuym
+Date: 2016年12月16日 9:10:32
+Message:
+update demo code
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/cache.properties.lock
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileHashes.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileSnapshots.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/outputFileStates.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/taskArtifacts.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.idea/encodings.xml
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.idea/workspace.xml
+Modified : /wsijk/trunk/android/demo/WsVideoTest/local.properties
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/AndroidMediaPlayer.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/IjkMediaMeta.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/IjkMediaPlayer.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/misc/AndroidTrackInfo.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/misc/ITrackInfo.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/misc/IjkTrackInfo.java
+Added : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/pragma/Version.java
+Added : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/AppPrivteData.java
+Added : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/CircleProgressBar.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/InfoHudViewHolder.java
+Added : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/SharedPreferencesHelper.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/SurfaceViewTestActivity.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/res/layout/activity_surface_view_test.xml
+Added : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/res/values/attrs.xml
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/res/values/strings.xml
+
+Revision: 26819
+Author: wuym
+Date: 2016年12月14日 17:11:16
+Message:
+upload these two version v1.3_r1 and v1.3_r2
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161212-v1.3_r1.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161214-v1.3_r2.aar
+
+Revision: 26814
+Author: huangzl
+Date: 2016年12月14日 16:46:37
+Message:
+revert mpeg4 A-V sync issue commit for new mpeg2 sync issue
+***********
+修改日期：2016.12.14 16:46:37
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3301101 胡桃2个别直播频道（mepg2）出现不同步，log看会出现A-V差距拉大
+问题原因：r25014 r25019修改，A-V同步条件过于严格导致个别源会出现A-V差距变大
+修改方法：还原r25014 r25019修改，A-V同步条件先回退默认设置，修改后，bug3301010的A-V不同步信息修复了，
+					但是还是音视频不同步，后续优化
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 26514
+Author: wuym
+Date: 2016年12月8日 17:47:08
+Message:
+add interface to show frame drop
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffmsg.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 26492
+Author: wuym
+Date: 2016年12月8日 17:23:30
+Message:
+add to support displaying cap parm
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffmsg.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 26469
+Author: wuym
+Date: 2016年12月8日 11:42:49
+Message:
+support computing tcp speed for Ts slice
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 26415
+Author: wuym
+Date: 2016年12月7日 14:28:06
+Message:
+republish the version for multi-thread decoding rmvb
+----
+Modified : /wsijk/tags/wsplayer-aar-release/wsplayer-20161205-v1.3.aar
+
+Revision: 26411
+Author: huangzl
+Date: 2016年12月7日 13:50:44
+Message:
+revert r26311 commit because if disable rv40 multithreading decoding, it will bring performance issue
+***********
+修改日期：2016.12.07 13:50:44
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：rmvb软解A-V不同步
+问题原因：性能不够，r26311为了修改rmvb花屏问题把多线程解码改成单线程解码
+修改方法：还原r26311修改，rmvb恢复多线程解码
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/rv40.c
+
+Revision: 26410
+Author: huangzl
+Date: 2016年12月7日 11:47:15
+Message:
+revert r26311 commit because if disable rmvb mutilthreading decoding, it will bring performance issue
+***********
+修改日期：2016.12.07 11:47:15
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：rmvb软解A-V不同步
+问题原因：性能不够，r26311为了修改rmvb花屏问题把多线程解码改成单线程解码
+修改方法：还原r26311修改，rmvb恢复多线程解码（v1.3 release分支修改）
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_v1.3_release/extra/ffmpeg31/libavcodec/rv40.c
+
+Revision: 26408
+Author: huangzl
+Date: 2016年12月7日 11:39:31
+Message:
+create wsplayer v1.3 branch
+***********
+修改日期：2016.12.07 11:39:31
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：因为rmvb解码问题，创建v1.3 release 分支修改出aar
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/branches/br_v1.3_release (Copy from path: /wsijk/tags/wsplayer-v1.3-release, Revision, 26407)
+
+Revision: 26389
+Author: huangzl
+Date: 2016年12月6日 16:16:52
+Message:
+recommit r26379 fix NULL pointer to avoid crash dump
+***********
+修改日期：2016.12.06 16:16:52
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：重新提交r26379,因为要先出v1.3 release tag版本
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_java.c
+
+Revision: 26388
+Author: huangzl
+Date: 2016年12月6日 16:14:11
+Message:
+revert error unexpected commit r26387
+***********
+修改日期：2016.12.06 16:14:11
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：回退r26387的操作失误引起的无效提交
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/rv40.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_java.c
+
+Revision: 26387
+Author: huangzl
+Date: 2016年12月6日 16:10:33
+Message:
+recommit r
+***********
+修改日期：2016.12.06 16:10:33
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：操作失误的无效提交
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/rv40.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_java.c
+
+Revision: 26386
+Author: huangzl
+Date: 2016年12月6日 16:06:34
+Message:
+make wsplayer-v1.3 tag
+***********
+修改日期：2016.12.06 16:06:34
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建v1.3 release tag版本
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-v1.3-release (Copy from path: /wsijk/trunk, Revision, 26385)
+
+Revision: 26385
+Author: huangzl
+Date: 2016年12月6日 16:03:59
+Message:
+tag wsplayer-v1.3 and update Changelog
+***********
+修改日期：2016.12.06 16:03:59
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新Changelog
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/Changelog
+
+Revision: 26384
+Author: huangzl
+Date: 2016年12月6日 16:02:39
+Message:
+revert r26379 because of tag wsplayer-v1.3
+***********
+修改日期：2016.12.06 16:02:39
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：回退r26379提交，因为要创建v1.3 release tag版本
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_java.c
+
+Revision: 26379
+Author: wuym
+Date: 2016年12月6日 15:27:14
+Message:
+fix NULL pointer to avoid crash dump
+----
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_java.c
+
+Revision: 26360
+Author: wuym
+Date: 2016年12月5日 18:45:01
+Message:
+publish the V1.3 version
+----
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20161202-v1.3.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161205-v1.3.aar
+
+Revision: 26311
+Author: huangzl
+Date: 2016年12月2日 20:16:41
+Message:
+fix rmvb seek blurred screen because new ffmpeg use mutilthreading to decode rv40 but has issue, now temp disable
+***********
+修改日期：2016.12.02 20:16:41
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3256343 rmvb视频播放后退出，再次进去继续播放，大概率花屏
+问题原因：ffmpeg在rmvb的多线程解码上存在bug，多线程数据的同步bug引起关键帧数据丢失引起
+修改方法：临时禁止rmvb解码的多线程属性，可以解决问题
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/rv40.c
+
+Revision: 26261
+Author: wuym
+Date: 2016年12月2日 9:07:09
+Message:
+wsplayer-20161202-v1.3
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161202-v1.3.aar
+
+Revision: 26253
+Author: huangzl
+Date: 2016年12月1日 17:26:56
+Message:
+fix hls seek issue when seek in buffering state
+***********
+修改日期：2016.12.01 17:26:56
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：r26235修改记录的补充修改 回看短按seek时不精准问题
+问题原因：r26235修改方案，如果用户快速多次短按操作，会引入查找播放的pts所在的ts分片错误的问题
+修改方法：用户多次快速seek操作，后面的seek操作时会处于缓冲buffering状态，这个时候需要保留第一次的seek的相关参数，用于
+					后面紧跟着的seek操作的ts分片的查找
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/avformat.h
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 26235
+Author: huangzl
+Date: 2016年11月30日 20:00:56
+Message:
+fix hls seek issue, use pkt pts to find correct segment to seek
+***********
+修改日期：2016.11.30 20:00:56
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3302990 & bug3250242 回看短按seek时不精准问题
+问题原因：ijkplayer这边根据hls的ts提供的pts时间来计算播放时钟时，与hls协议里面的ts分片的切换计算不是很一致造成
+修改方法：保存ijkplayer当前播放的pts时间戳以及seek的位移，在hls里去查找ijkplayer播放的pts所在的ts分片，然后根据seek位移找到正确的ts分片
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/avformat.h
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 26044
+Author: wuym
+Date: 2016年11月25日 14:04:34
+Message:
+add retry to fix can't reload playlist sometimes
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 26041
+Author: wuym
+Date: 2016年11月25日 11:35:30
+Message:
+fix report completion for hls when eof occurs
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_cmdutils.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_cmdutils.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 26004
+Author: wuym
+Date: 2016年11月24日 18:13:02
+Message:
+fix no voice when playing ts that contains aac
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25960
+Author: wuym
+Date: 2016年11月24日 10:21:33
+Message:
+revert to hzl's version for blurred screen issue
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25934
+Author: huangzl
+Date: 2016年11月23日 16:12:14
+Message:
+shorten period of buffering checking and limit buffering total time to 500ms before video render, this will for reduce the video first loading time
+***********
+修改日期：2016.11.23 16:12:14
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3249821 MP4加载比较慢
+问题原因：mp4加载慢有多方面原因，这里分析的是ijk在第一次加载的时候，缓冲的数据比较大，会拉长加载时间，所以需要适当减少第一次的缓冲数据
+修改方法：针对视频还没开始渲染的第一次缓冲阶段，适当的减少缓冲数据，避免默认的可能会缓冲10多秒的情况
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25933
+Author: huangzl
+Date: 2016年11月23日 16:10:47
+Message:
+reduce mp4 video first loading time,do not to calibration the short_seek_threshold because use too long time, unworthy
+***********
+修改日期：2016.11.23 16:10:47
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3249821 MP4加载比较慢
+问题原因：mp4加载慢有多方面原因，这里分析的是mp4在read_header的时候，会去计算一个short_seek的参数，需要遍历所有stream的所有index，很耗时
+修改方法：short_seek参数已经有一个默认值，不做short_seek的校准，并不影响正常的播放，但是可以很大程度减少mp4加载时间，所以，屏蔽short_seek的校准过程。
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/mov.c
+
+Revision: 25786
+Author: huangzl
+Date: 2016年11月21日 11:33:51
+Message:
+for reduce anr action after switch video too quick
+***********
+修改日期：2016.11.21 11:33:51
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3253553 胡桃盒子快速切换频道，集数，容易anr
+问题原因：快速切换频道集数时，是一个关闭上一个播放，开始下一个播放的过程，关闭播放过程，需要关闭所有开启的线程，其中，read_thread经常退出比较慢，
+					会造成anr
+修改方法：对关闭播放过程，read_thread需要退出时涉及的大部分耗时过程（主要是一些循环处理），利用用户中断回调函数的机制，主动退出耗时过程，加快read_thread线程的退出
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25773
+Author: huangzl
+Date: 2016年11月18日 18:59:39
+Message:
+for reduce anr action after switch video too quick
+***********
+修改日期：2016.11.18 18:59:39
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3253553 胡桃盒子快速切换频道，集数，容易anr
+问题原因：快速切换频道集数时，是一个关闭上一个播放，开始下一个播放的过程，关闭播放过程，需要关闭所有开启的线程，其中，read_thread经常退出比较慢，
+					会造成anr
+修改方法：对关闭播放过程，read_thread需要退出时涉及的大部分耗时过程（主要是一些循环处理），利用用户中断回调函数的机制，主动退出耗时过程，加快read_thread线程的退出
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/http.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/mov.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/tcp.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25770
+Author: wuym
+Date: 2016年11月18日 17:58:49
+Message:
+add a feature to report the percentage of the cache
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25755
+Author: wuym
+Date: 2016年11月18日 15:50:46
+Message:
+add the symbol to fix the complie error
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25753
+Author: wuym
+Date: 2016年11月18日 15:31:19
+Message:
+fix blurred screen when playing rmvb
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25749
+Author: huangzl
+Date: 2016年11月18日 15:10:05
+Message:
+fix blurred screen before first frame render when use mediacodec decoder because overlay format is not correct
+***********
+修改日期：2016.11.18 15:10:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug3158153 部分视频加载时刚开始会出现花屏现象
+问题原因：主要是MediaCodec解码会出现，一些大视频，第一视频帧已经解码出来了，但是还没有通知MediaCodec去渲染这一帧数据，这个时间段，解码器会显示一些意想不到
+					的图像造成花屏
+修改方法：对于一些大视频，也就是第一帧解码出来后到显示第一帧这个时间比较长的情况，增加优化处理，就是如果第一帧解码出来后，立马通知MediaCodec去渲染这个第一帧
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 25700
+Author: huangzl
+Date: 2016年11月17日 14:19:28
+Message:
+make wsplayer-v1.2-release tag
+***********
+修改日期：2016.11.17 14:19:28
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建v1.2 release tag版本
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-v1.2-release (Copy from path: /wsijk/trunk, Revision, 25699)
+
+Revision: 25699
+Author: huangzl
+Date: 2016年11月17日 14:13:18
+Message:
+tag wsplayer-v1.2-release and update Changelog
+***********
+修改日期：2016.11.17 14:13:18
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新v1.2的Changelog
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/Changelog
+
+Revision: 25579
+Author: wuym
+Date: 2016年11月14日 18:07:44
+Message:
+replace the previous version v1.2
+----
+Modified : /wsijk/tags/wsplayer-aar-release/wsplayer-20161111-v1.2.aar
+
+Revision: 25548
+Author: wuym
+Date: 2016年11月14日 13:42:17
+Message:
+update the demo for v1.2
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/cache.properties.lock
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileHashes.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileSnapshots.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/outputFileStates.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/taskArtifacts.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.idea/workspace.xml
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/src/main/java/tv/danmaku/ijk/media/player/IjkMediaPlayer.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/SurfaceViewTestActivity.java
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/res/layout/activity_surface_view_test.xml
+
+Revision: 25533
+Author: wuym
+Date: 2016年11月11日 19:04:42
+Message:
+publish wsplayer-20161111-v1.2.aar
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161111-v1.2.aar
+
+Revision: 25530
+Author: wuym
+Date: 2016年11月11日 17:33:37
+Message:
+fix no voice issue when TS contains mp3 audio
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25447
+Author: wuym
+Date: 2016年11月10日 14:40:51
+Message:
+report the second error code directly for timeout error to distinguish the detail error
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25446
+Author: wuym
+Date: 2016年11月10日 14:38:39
+Message:
+support mediacodec decoder for all h264 profile
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 25439
+Author: huangzl
+Date: 2016年11月10日 13:34:13
+Message:
+enable dts/dtshd/dca audio
+***********
+修改日期：2016.11.10 13:34:13
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：支持dts/dtshd音频
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+
+Revision: 25426
+Author: wuym
+Date: 2016年11月9日 18:07:53
+Message:
+reset the retry_count
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 25380
+Author: wuym
+Date: 2016年11月8日 18:29:04
+Message:
+distinguish the detail cause when reporting -110
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25378
+Author: wuym
+Date: 2016年11月8日 18:10:25
+Message:
+fix can't report -110 when playing reviewing program
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25334
+Author: huangzl
+Date: 2016年11月8日 9:27:57
+Message:
+release wsplayer v1.2 (debug)
+***********
+修改日期：2016.11.8 9:27:57
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：v1.2 debug aar提交
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161107-debug.aar
+
+Revision: 25295
+Author: huangzl
+Date: 2016年11月7日 14:10:18
+Message:
+merge:fix can't report complete message after replaying m3u8
+***********
+修改日期：2016.11.7 14:10:18
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：合并育敏的r25240分支提交
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25266
+Author: huangzl
+Date: 2016年11月4日 18:22:54
+Message:
+enable dolby audio
+***********
+修改日期：2016.11.4 18:22:54
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：支持杜比音效（ac3）,这里漏洞了dts/dtshd(后面补交)
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+
+Revision: 25242
+Author: wuym
+Date: 2016年11月4日 15:23:21
+Message:
+fix issue:
+1. report complete message after complete replaying m3u8
+----
+Modified : /wsijk/tags/wsplayer-aar-release/wsplayer-20161101-v1.1_r5.aar
+
+Revision: 25240
+Author: wuym
+Date: 2016年11月4日 15:01:38
+Message:
+fix can't report complete message after replaying m3u8
+----
+Modified : /wsijk/branches/br_v1.1-release/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/branches/br_v1.1-release/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25229
+Author: huangzl
+Date: 2016年11月4日 11:06:29
+Message:
+rename v1.1-release branches
+***********
+修改日期：2016.11.4 11:06:29
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：重命名v1.1 release分支
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/branches/br_v1.1-release (Copy from path: /wsijk/branches/wsplayer-v1.1-release_v5, Revision, 25228)
+Deleted : /wsijk/branches/wsplayer-v1.1-release_v5
+
+Revision: 25228
+Author: huangzl
+Date: 2016年11月4日 10:58:48
+Message:
+only amlogic hw decoder need to delay to display
+***********
+修改日期：2016.11.4 10:58:48
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：优化r24307 & r24309修改，只针对amlogic平台硬解的时候，在视频第一次显示的时候，适当的延迟些（最大150ms）
+					规避amlogic平台上硬解播放视频时刚开始会在视频的边缘有短时间的花屏现象
+修改方法：增加amlogic平台的标签判断
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25099
+Author: wuym
+Date: 2016年11月1日 14:37:44
+Message:
+fix issue:
+1. crash issue caused by NULL pointer
+2. can't report -110 in replaying m3u8 after stop the live stream server
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161101-v1.1_r5.aar
+
+Revision: 25098
+Author: wuym
+Date: 2016年11月1日 14:27:13
+Message:
+fix crash issue caused by NULL pointer
+----
+Modified : /wsijk/branches/wsplayer-v1.1-release_v5/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 25096
+Author: wuym
+Date: 2016年11月1日 14:22:40
+Message:
+fix can't report -110 in replaying m3u8 after stop living stream server
+----
+Modified : /wsijk/branches/wsplayer-v1.1-release_v5/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/branches/wsplayer-v1.1-release_v5/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25091
+Author: huangzl
+Date: 2016年11月1日 14:08:47
+Message:
+create wsplayer-v1.1-release_r5
+***********
+修改日期：2016.11.1 14:08:47
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建v1.1 release r5 tag版本
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/branches/wsplayer-v1.1-release_v5 (Copy from path: /wsijk/tags/wsplayer-v1.1-release, Revision, 25090)
+
+Revision: 25090
+Author: wuym
+Date: 2016年11月1日 14:04:49
+Message:
+fix crash issue caused by NULL pointer
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 25088
+Author: wuym
+Date: 2016年11月1日 13:46:46
+Message:
+fix can't report -110 in replaying m3u8 after stop living stream server
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25028
+Author: huangzl
+Date: 2016年10月28日 17:36:24
+Message:
+rename aar release files
+***********
+修改日期：2016.10.28 17:36:24
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：整理svn目录，重命名aar文件
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160920-v1.0.aar (Copy from path: /wsijk/tags/wsplayer-aar-release/wsplayer-20160920.aar, Revision, 25012)
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20160920.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160929-v1.1.aar (Copy from path: /wsijk/tags/wsplayer-aar-release/wsplayer-20160929.aar, Revision, 25012)
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20160929.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161009-v1.1_r1.aar (Copy from path: /wsijk/tags/wsplayer-aar-release/wsplayer-20161009.aar, Revision, 25012)
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20161009.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161010-v1.1_r2.aar (Copy from path: /wsijk/tags/wsplayer-aar-release/wsplayer-20161010.aar, Revision, 25012)
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20161010.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161013-v1.1_r3.aar (Copy from path: /wsijk/tags/wsplayer-aar-release/wsplayer-20161013.aar, Revision, 25012)
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20161013.aar
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161021-v1.1_r4.aar (Copy from path: /wsijk/tags/wsplayer-aar-release/wsplayer-20161021.aar, Revision, 25012)
+Deleted : /wsijk/tags/wsplayer-aar-release/wsplayer-20161021.aar
+
+Revision: 25025
+Author: wuym
+Date: 2016年10月28日 17:31:57
+Message:
+add README about name rule for release
+----
+Added : /wsijk/tags/wsplayer-aar-release/README.txt
+
+Revision: 25022
+Author: huangzl
+Date: 2016年10月28日 17:22:45
+Message:
+merge from trunk 24407:25005
+***********
+修改日期：2016.10.28 17:22:45
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：合并trunk 24407-25005的提交到br_debuging调试分支
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging
+Added : /wsijk/branches/br_debuging/Changelog (Copy from path: /wsijk/trunk/Changelog, Revision, 25005)
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/cache.properties.lock
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileHashes.bin
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileSnapshots.bin
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/outputFileStates.bin
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/taskArtifacts.bin
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/.idea/workspace.xml
+Deleted : /wsijk/branches/br_debuging/android/demo/WsVideoTest/build
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/local.properties
+Deleted : /wsijk/branches/br_debuging/android/demo/WsVideoTest/wsplayer/build
+Deleted : /wsijk/branches/br_debuging/android/demo/WsVideoTest/wsplayertest/build
+Modified : /wsijk/branches/br_debuging/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/SurfaceViewTestActivity.java
+Modified : /wsijk/branches/br_debuging/extra/ffmpeg31/libavformat/tcp.c
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay_def.h
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ijkplayer.c
+
+Revision: 25021
+Author: huangzl
+Date: 2016年10月28日 17:18:18
+Message:
+merge log:disable prefer first h264 stream if  multiple video stream found, because the h264 stream maybe not the most clearly stream
+***********
+修改日期：2016.10.28 17:18:18
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug792903 mpeg2在ijk播放比较模糊
+问题原因：合并分支的r24997修改，视频存在两路视频轨道，一路是h264,一路是mpeg2，ijkplayer默认优先h264视频，而h264视频轨道更模糊
+修改方法：去掉ijkplayer默认优先h264视频轨道的处理
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25020
+Author: huangzl
+Date: 2016年10月28日 17:17:08
+Message:
+merge log:fix can't switching to next program automatically after compete playing avi
+***********
+修改日期：2016.10.28 17:17:08
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：合并育敏的分支的r24972修改
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 25019
+Author: huangzl
+Date: 2016年10月28日 17:15:13
+Message:
+merge log:fix for mpeg4 A-V sync issue when use mediacodec decoder
+***********
+修改日期：2016.10.28 17:15:13
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2757224 avi视频在m8s盒子上播放不同步问题
+问题原因：合并分支的r24639修改：这里针对的是MediaCodec播放情况A-V无法同步，因为部分视频由硬解码器出来的两帧之间的pts差值
+					很不规律，很多差值很大，造成同步异常
+修改方法：参考ffplay,A-V同步的最大阀值由100减少为10，也就是超过这个阀值不进行A-V同步逻辑处理（异常状态）
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 25018
+Author: huangzl
+Date: 2016年10月28日 17:13:53
+Message:
+merge log:fix mpeg4 A-V sync issue when use ffmpeg decoder
+***********
+修改日期：2016.10.28 17:13:53
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2875652 avi视频在m8s盒子上播放不同步问题
+问题原因：合并分支的r24638修改：这里针对的是ffmpeg软解A-V无法同步，对于xvid的mpeg4编码格式，存在非标准的B帧数据，
+					ffmpeg在获取B帧的时候，采用的是stream copy流拷贝方式进行wordaround方式解决，这样，不会带来丢（B帧），
+					但带来飞副作用是更多的内存要求，以及更高的CPU解码能力要求，而这个在一些硬件配置较差的ARM机器来说，
+					很容易引起因为流拷贝导致解码能力下降造成音视频不同步
+修改方法：在获取B帧的stream copy流拷贝的时候，增加判断，如果这个数据过大（目前阀值是8K），则不进行拷贝，
+					也就是最终会丢弃这个B帧。经过这样的处理，适当的减少B帧，而同时对解码能力不影响，就不会引起音视频不同步。
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/mpeg4videodec.c
+
+Revision: 25016
+Author: huangzl
+Date: 2016年10月28日 17:12:34
+Message:
+merge log:dynamic increase mpegts video probe size to fix some aac no sound bug
+***********
+修改日期：2016.10.28 17:12:34
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2695721 部分4k（ts流）视频播放无声音
+问题原因：合并分支的r24585修改：视频探测数据不够，无法正常分离出音频信息
+修改方法：针对ts流（ts的加载速度有进行优化），当达到ffmpeg设置的probe的size时，如果这个时候还无法分离出音频，继续探测
+					直到探测到音频信息，这个改动不影响正常的ts流的探测。
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 25015
+Author: huangzl
+Date: 2016年10月28日 17:11:09
+Message:
+merge log:improve avi non-interleaved detection,dts from 2s to 3s, for fix avi playback not smooth
+***********
+修改日期：2016.10.28 17:11:09
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2875674 avi视频播放，视频在播放，画面没动
+问题原因：合并分支的r24504修改：avi格式视频的音视频数据是否交错存放的条件判断不当，把交错存放的视频判断
+					成非交错存放的视频，造成了在播放的时候不断的发起请求导致播放很卡顿
+修改方法：优化avi格式的音视频数据交错存放的判断条件
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/avidec.c
+
+Revision: 25014
+Author: huangzl
+Date: 2016年10月28日 17:09:41
+Message:
+merge log:fix mpeg4 mediacodec decoder A-V sync issue
+***********
+修改日期：2016.10.28 17:09:41
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2875652 avi视频在m8s盒子上播放不同步问题
+问题原因：合并分支的r24439修改：这里针对的是MediaCodec播放情况A-V无法同步,因为部分视频由硬解码器出来的两帧之间的pts差值
+					很不规律，很多差值很大，造成同步异常
+修改方法：把帧间的Pts差值阀值有10改成0.1，条件更为严格，这样，但出现帧间Pts值大于0.1时，就不再用Pts来进行同步，而是用码率换算处理的帧间距来做同步
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 25008
+Author: huangzl
+Date: 2016年10月28日 16:01:42
+Message:
+move all release aar files to wsplayer-aar-release folder
+***********
+修改日期：2016.10.28 16:01:42
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：整理aar文件
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/tags/release_20160622.zip
+Deleted : /wsijk/tags/release_20160627.aar
+Deleted : /wsijk/tags/release_20160629.aar
+Deleted : /wsijk/tags/release_20160630.aar
+Deleted : /wsijk/tags/release_20160701.aar
+Deleted : /wsijk/tags/release_20160713.aar
+Deleted : /wsijk/tags/release_20160728.aar
+Deleted : /wsijk/tags/release_20160808.aar
+Deleted : /wsijk/tags/release_note.txt
+Deleted : /wsijk/tags/wsplayer-20160808-1.aar
+Deleted : /wsijk/tags/wsplayer-20160817.aar
+Deleted : /wsijk/tags/wsplayer-20160818.aar
+Deleted : /wsijk/tags/wsplayer-20160819.aar
+Deleted : /wsijk/tags/wsplayer-20160831.aar
+Deleted : /wsijk/tags/wsplayer-20160902.aar
+Deleted : /wsijk/tags/wsplayer-20160906.aar
+Deleted : /wsijk/tags/wsplayer-20160920.aar
+Deleted : /wsijk/tags/wsplayer-20160923.aar
+Deleted : /wsijk/tags/wsplayer-20160928.aar
+Deleted : /wsijk/tags/wsplayer-20160929.aar
+Deleted : /wsijk/tags/wsplayer-20161009.aar
+Deleted : /wsijk/tags/wsplayer-20161010.aar
+Deleted : /wsijk/tags/wsplayer-20161013.aar
+Deleted : /wsijk/tags/wsplayer-20161021.aar
+Added : /wsijk/tags/wsplayer-aar-release
+Added : /wsijk/tags/wsplayer-aar-release/release_20160622.zip (Copy from path: /wsijk/tags/release_20160622.zip, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160627.aar (Copy from path: /wsijk/tags/release_20160627.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160629.aar (Copy from path: /wsijk/tags/release_20160629.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160630.aar (Copy from path: /wsijk/tags/release_20160630.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160701.aar (Copy from path: /wsijk/tags/release_20160701.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160713.aar (Copy from path: /wsijk/tags/release_20160713.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160728.aar (Copy from path: /wsijk/tags/release_20160728.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_20160808.aar (Copy from path: /wsijk/tags/release_20160808.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/release_note.txt (Copy from path: /wsijk/tags/release_note.txt, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160808-1.aar (Copy from path: /wsijk/tags/wsplayer-20160808-1.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160817.aar (Copy from path: /wsijk/tags/wsplayer-20160817.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160818.aar (Copy from path: /wsijk/tags/wsplayer-20160818.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160819.aar (Copy from path: /wsijk/tags/wsplayer-20160819.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160831.aar (Copy from path: /wsijk/tags/wsplayer-20160831.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160902.aar (Copy from path: /wsijk/tags/wsplayer-20160902.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160906.aar (Copy from path: /wsijk/tags/wsplayer-20160906.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160920.aar (Copy from path: /wsijk/tags/wsplayer-20160920.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160923.aar (Copy from path: /wsijk/tags/wsplayer-20160923.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160928.aar (Copy from path: /wsijk/tags/wsplayer-20160928.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20160929.aar (Copy from path: /wsijk/tags/wsplayer-20160929.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161009.aar (Copy from path: /wsijk/tags/wsplayer-20161009.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161010.aar (Copy from path: /wsijk/tags/wsplayer-20161010.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161013.aar (Copy from path: /wsijk/tags/wsplayer-20161013.aar, Revision, 25007)
+Added : /wsijk/tags/wsplayer-aar-release/wsplayer-20161021.aar (Copy from path: /wsijk/tags/wsplayer-20161021.aar, Revision, 25007)
+
+Revision: 25007
+Author: huangzl
+Date: 2016年10月28日 15:54:03
+Message:
+create wsplayer-v1.1-release tag
+***********
+修改日期：2016.10.28 15:54:03
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建v1.1 release tag版本
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-v1.1-release (Copy from path: /wsijk/trunk, Revision, 25006)
+
+Revision: 25006
+Author: huangzl
+Date: 2016年10月28日 15:40:02
+Message:
+create wsplayer-v1.0-release tag
+***********
+修改日期：2016.10.28 15:40:02
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建v1.0 release tag版本
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-v1.0-release (Copy from path: /wsijk/trunk, Revision, 24006)
+
+Revision: 25005
+Author: huangzl
+Date: 2016年10月28日 15:36:39
+Message:
+tag wsplayer-v1.1-release and update Changelog
+***********
+修改日期：2016.10.28 15:36:39
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新v1.1 Changelog
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/Changelog
+
+Revision: 24997
+Author: huangzl
+Date: 2016年10月28日 13:59:05
+Message:
+disable prefer first h264 stream if  multiple video stream found, because the h264 stream maybe not the most clearly stream
+***********
+修改日期：2016.10.28 13:59:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug792903 mpeg2在ijk播放比较模糊
+问题原因：视频存在两路视频轨道，一路是h264,一路是mpeg2，ijkplayer默认优先h264视频，而h264视频轨道更模糊
+修改方法：去掉ijkplayer默认优先h264视频轨道的处理
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24972
+Author: wuym
+Date: 2016年10月27日 17:16:48
+Message:
+fix can't switching to next program automatically after compete playing avi
+----
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 24971
+Author: wuym
+Date: 2016年10月27日 16:47:34
+Message:
+add a useful log for connection timeout error
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24775
+Author: wuym
+Date: 2016年10月21日 18:25:34
+Message:
+update demo for handling network disconnection
+----
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/cache.properties.lock
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileHashes.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/fileSnapshots.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/outputFileStates.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.gradle/2.4/taskArtifacts/taskArtifacts.bin
+Modified : /wsijk/trunk/android/demo/WsVideoTest/.idea/workspace.xml
+Deleted : /wsijk/trunk/android/demo/WsVideoTest/build
+Modified : /wsijk/trunk/android/demo/WsVideoTest/local.properties
+Deleted : /wsijk/trunk/android/demo/WsVideoTest/wsplayer/build
+Deleted : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/build
+Modified : /wsijk/trunk/android/demo/WsVideoTest/wsplayertest/src/main/java/com/chinanetcenter/wsvideotest/SurfaceViewTestActivity.java
+
+Revision: 24761
+Author: wuym
+Date: 2016年10月21日 17:37:45
+Message:
+fix issue
+1. video block after network disconnect and can't replay
+----
+Added : /wsijk/tags/wsplayer-20161021.aar
+
+Revision: 24750
+Author: wuym
+Date: 2016年10月21日 17:03:04
+Message:
+increase the timeout value to 3 sec
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/tcp.c
+
+Revision: 24736
+Author: wuym
+Date: 2016年10月21日 15:56:25
+Message:
+fix video block issue after network disconnection
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/tcp.c
+
+Revision: 24639
+Author: huangzl
+Date: 2016年10月18日 17:20:02
+Message:
+fix for mpeg4 A-V sync issue when use mediacodec decoder
+***********
+修改日期：2016.10.18 17:20:02
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2757224 avi视频在m8s盒子上播放不同步问题
+问题原因：这里针对的是MediaCodec播放情况A-V无法同步，因为部分视频由硬解码器出来的两帧之间的pts差值
+					很不规律，很多差值很大，造成同步异常
+修改方法：参考ffplay,A-V同步的最大阀值由100减少为10，也就是超过这个阀值不进行A-V同步逻辑处理（异常状态）
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 24638
+Author: huangzl
+Date: 2016年10月18日 16:33:22
+Message:
+fix mpeg4 A-V sync issue when use ffmpeg decoder
+***********
+修改日期：2016.10.18 16:33:22
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2875652 avi视频在m8s盒子上播放不同步问题
+问题原因：这里针对的是ffmpeg软解A-V无法同步，对于xvid的mpeg4编码格式，存在非标准的B帧数据，
+					ffmpeg在获取B帧的时候，采用的是stream copy流拷贝方式进行wordaround方式解决，这样，不会带来丢（B帧），
+					但带来飞副作用是更多的内存要求，以及更高的CPU解码能力要求，而这个在一些硬件配置较差的ARM机器来说，
+					很容易引起因为流拷贝导致解码能力下降造成音视频不同步
+修改方法：在获取B帧的stream copy流拷贝的时候，增加判断，如果这个数据过大（目前阀值是8K），则不进行拷贝，
+					也就是最终会丢弃这个B帧。经过这样的处理，适当的减少B帧，而同时对解码能力不影响，就不会引起音视频不同步。
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging/extra/ffmpeg31/libavcodec/mpeg4videodec.c
+
+Revision: 24585
+Author: huangzl
+Date: 2016年10月14日 16:11:32
+Message:
+dynamic increase mpegts video probe size to fix some aac no sound bug
+***********
+修改日期：2016.10.14 16:11:32
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2695721 部分4k（ts流）视频播放无声音
+问题原因：视频探测数据不够，无法正常分离出音频信息
+修改方法：针对ts流（ts的加载速度有进行优化），当达到ffmpeg设置的probe的size时，如果这个时候还无法分离出音频，继续探测
+					直到探测到音频信息，这个改动不影响正常的ts流的探测。
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 24519
+Author: wuym
+Date: 2016年10月13日 16:24:31
+Message:
+fix issue:
+1. video issue for mpeg4 hard decode
+----
+Added : /wsijk/tags/wsplayer-20161013.aar
+
+Revision: 24511
+Author: huangzl
+Date: 2016年10月13日 15:47:16
+Message:
+revert from r24426 to r24407 to set csd-0 data to mediacodec for mpeg4
+***********
+修改日期：2016.10.13 15:47:16
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2792514 & bug2775481 amlogic平台上硬解mpeg4视频花屏
+问题原因：还原r24407的修改（之前为了版本回退了修改）：MediaCodec里面有csd-0/csd-1数据需要填充，Mpeg4需要填充csd-0，而我们把mpeg4改成MediaCodec解码时没有填充csd-0数据
+修改方法：对于mpeg4的MediaCodec硬解情况，需要填充csd-0数据
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 24504
+Author: huangzl
+Date: 2016年10月13日 11:47:12
+Message:
+improve avi non-interleaved detection,dts from 2s to 3s, for fix avi playback not smooth
+***********
+修改日期：2016.10.13 11:47:12
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2875674 avi视频播放，视频在播放，画面没动
+问题原因：avi格式视频的音视频数据是否交错存放的条件判断不当，把交错存放的视频判断
+					成非交错存放的视频，造成了在播放的时候不断的发起请求导致播放很卡顿
+修改方法：优化avi格式的音视频数据交错存放的判断条件
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging/extra/ffmpeg31/libavformat/avidec.c
+
+Revision: 24444
+Author: wuym
+Date: 2016年10月10日 18:16:10
+Message:
+append the comment for seek and cancel the 500ms operation
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkplayer.c
+
+Revision: 24443
+Author: wuym
+Date: 2016年10月10日 18:06:34
+Message:
+add comment for my modification
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24441
+Author: wuym
+Date: 2016年10月10日 18:00:15
+Message:
+just for test
+1. cancel the timeout when seek
+2. report -110 for app to reconnect
+----
+Added : /wsijk/tags/wsplayer-20161010.aar
+
+Revision: 24439
+Author: huangzl
+Date: 2016年10月10日 17:29:41
+Message:
+fix mpeg4 mediacodec decoder A-V sync issue
+***********
+修改日期：2016.10.10 17:29:41
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2875652 avi视频在m8s盒子上播放不同步问题
+问题原因：这里针对的是MediaCodec播放情况A-V无法同步,因为部分视频由硬解码器出来的两帧之间的pts差值
+					很不规律，很多差值很大，造成同步异常
+修改方法：把帧间的Pts差值阀值有10改成0.1，条件更为严格，这样，但出现帧间Pts值大于0.1时，就不再用Pts来进行同步，而是用码率换算处理的帧间距来做同步
+修改文件：
+***********
+----
+Modified : /wsijk/branches/br_debuging/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24426
+Author: huangzl
+Date: 2016年10月10日 13:43:43
+Message:
+revert reversion from r24384 to r24314 because will output release version
+***********
+修改日期：2016.10.10 13:43:43
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：还原r24384的修改，为了出aar版本
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 24425
+Author: huangzl
+Date: 2016年10月10日 10:52:54
+Message:
+rename branch
+***********
+修改日期：2016.10.10 10:52:54
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：重命名debuging分支
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/branches/br_debuging (Copy from path: /wsijk/branches/debuging_br, Revision, 24424)
+Deleted : /wsijk/branches/debuging_br
+
+Revision: 24424
+Author: huangzl
+Date: 2016年10月10日 10:45:05
+Message:
+create debuging branch
+***********
+修改日期：2016.10.10 10:45:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：创建debuging分支
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/branches/debuging_br (Copy from path: /wsijk/trunk, Revision, 24423)
+
+Revision: 24409
+Author: wuym
+Date: 2016年10月9日 17:17:43
+Message:
+fix issue
+1. report -110 to reconnect for connection error!
+2. mpeg4 hard-decode issue in m8s
+----
+Added : /wsijk/tags/wsplayer-20161009.aar
+
+Revision: 24407
+Author: wuym
+Date: 2016年10月9日 16:46:26
+Message:
+report error code -110 to uplayer to reconnect
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24384
+Author: huangzl
+Date: 2016年10月9日 16:07:29
+Message:
+fix mpeg4 blurred screen when use mediacodec decoder
+***********
+修改日期：2016.10.9 16:07:29
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2792514 & bug2775481 amlogic平台上硬解mpeg4视频花屏
+问题原因：MediaCodec里面有csd-0/csd-1数据需要填充，Mpeg4需要填充csd-0，而我们把mpeg4改成MediaCodec解码时没有填充csd-0数据
+修改方法：对于mpeg4的MediaCodec硬解情况，需要填充csd-0数据
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 24317
+Author: wuym
+Date: 2016年9月29日 18:19:20
+Message:
+add the new feature for reducing the loading time
+----
+Modified : /wsijk/tags/wsplayer-20160929.aar
+
+Revision: 24314
+Author: wuym
+Date: 2016年9月29日 17:41:03
+Message:
+reduce the loading time when probe the TS stream
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 24310
+Author: wuym
+Date: 2016年9月29日 17:22:02
+Message:
+fix video issue when start playing
+----
+Added : /wsijk/tags/wsplayer-20160929.aar
+
+Revision: 24309
+Author: huangzl
+Date: 2016年9月29日 17:15:29
+Message:
+fix blurred screen when begin play video
+***********
+修改日期：2016.9.29 17:15:29
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：amlogic平台硬解的时候，直播加载播放，刚开始播放会概率性出血短暂的边缘花屏问题
+问题原因：对r24307再优化，还有个别频道会有花屏现象
+修改方法：由100ms的延迟增加到150ms，可以基本解决大部分频道不再出现花屏
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24307
+Author: huangzl
+Date: 2016年9月29日 17:07:54
+Message:
+fix blurred screen when play video
+***********
+修改日期：2016.9.29 17:07:54
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：amlogic平台硬解的时候，直播加载播放，刚开始播放会概率性出血短暂的边缘花屏问题
+问题原因：amlogic平台硬解的时候，刚开始overlay的尺寸会概率性出现三次抖动，而视频帧的尺寸是固定的，在抖动过程中就会产生花屏
+修改方法：在视频第一次显示的时候，适当的延迟些（最大150ms）再渲染显示，这样可以规避掉overlay的抖动阶段
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 24261
+Author: wuym
+Date: 2016年9月28日 18:14:27
+Message:
+reduce the loading time for ts
+----
+Added : /wsijk/tags/wsplayer-20160928.aar
+
+Revision: 24255
+Author: huangzl
+Date: 2016年9月28日 17:42:59
+Message:
+speed up mpegts loading speed
+***********
+修改日期：2016.9.28 17:42:59
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2747187 ijkplayer直播加载比较慢
+问题原因：直播ts流在分离stream信息时花的时间过长导致
+修改方法：在ts流分离stream信息时，个别不需要的参数优化掉，同时不影响最终的播放，又能加快加载速度
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/mpegts.c
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 24140
+Author: wuym
+Date: 2016年9月26日 11:19:48
+Message:
+update the demo source code
+
+Revision: 24111
+Author: wuym
+Date: 2016年9月23日 18:00:04
+Message:
+replace of the previous one, Due to resolve the video issue via abandoning the B frame after seek action
+----
+Modified : /wsijk/tags/wsplayer-20160923.aar
+
+Revision: 24110
+Author: huangzl
+Date: 2016年9月23日 17:43:13
+Message:
+fix blurred screen after rmvb seeked
+***********
+修改日期：2016.9.23 17:43:13
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2759065 rmvb seek后花屏问题
+问题原因：rmvb在seek后并不一定以关键帧开始，如果是B帧开始，则需要丢弃，ffmpeg3.0以后对是B帧的情况做了处理导致的花屏
+修改方法：参考ffmpeg2.8版本的做法，碰到B帧直接丢弃掉处理
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/rv34.c
+
+Revision: 24109
+Author: wuym
+Date: 2016年9月23日 16:47:10
+Message:
+fix issue:
+1. rmvb seek slowly
+2. notify error for app to reconnect both in VOD and Live Streaming when network error occurs .
+----
+Added : /wsijk/tags/wsplayer-20160923.aar
+
+Revision: 24107
+Author: huangzl
+Date: 2016年9月23日 14:56:45
+Message:
+report timeout error if fetch video data error
+***********
+修改日期：2016.9.23 14:56:45
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：ijkplayer在网络异常时获取数据出现异常后的错误上报处理
+问题原因：为了cloudtv逻辑层统一处理，Ijkplayer统一上报-110错误，方便cloudtv重试
+修改方法：修改错误上报的参数格式
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 24100
+Author: huangzl
+Date: 2016年9月23日 14:35:05
+Message:
+speed up the seek action for rmvb format
+***********
+修改日期：2016.9.23 14:35:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2747187 rmvb seek很慢
+问题原因：rmvb在seek的时候，使用二分查找方法找到最接近的index，但定位算法太耗时
+修改方法：二分查找很耗时部分根据调试log来看，有点多余，因为rmvb本身就有Index的链表，每个index里都包含pos信息，根据seek的pos和index的pos信息，
+					就可以找到需要播放的index位置，二分法执行后不改变结果，所以，屏蔽rmvb的二分查找部分
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/utils.c
+
+Revision: 24097
+Author: huangzl
+Date: 2016年9月23日 14:32:41
+Message:
+disable debug log(too much)
+***********
+修改日期：2016.9.23 14:32:41
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：调试log打印太多，影响log分析
+问题原因：
+修改方法：降低log打印优先级
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavcodec/cook.c
+
+Revision: 24051
+Author: wuym
+Date: 2016年9月21日 17:48:05
+Message:
+due to lack of a patch about "probesize and analyzeduration", republish this version replace the previous
+----
+Modified : /wsijk/tags/wsplayer-20160920.aar
+
+Revision: 24008
+Author: wuym
+Date: 2016年9月20日 10:18:46
+Message:
+wsplayer v1.1
+----
+Added : /wsijk/tags/wsplayer-20160920.aar
+
+Revision: 24006
+Author: wuym
+Date: 2016年9月20日 9:26:47
+Message:
+fix crash issue caused by fixing noise after play video
+----
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_aout_android_audiotrack.c
+
+Revision: 23976
+Author: wuym
+Date: 2016年9月19日 9:31:23
+Message:
+revert the patch about audio missing
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/options_table.h
+
+Revision: 23734
+Author: wuym
+Date: 2016年9月6日 17:31:56
+Message:
+fix issues
+1. can't support hard decode for mpeg4 in avi
+2. no-av-sync cause Audio faster than Video
+----
+Added : /wsijk/tags/wsplayer-20160906.aar
+
+Revision: 23727
+Author: wuym
+Date: 2016年9月6日 16:35:43
+Message:
+fix can't select mediacodec to decode mpeg4 in avi and no-av-sync issue
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+
+Revision: 23707
+Author: wuym
+Date: 2016年9月5日 17:59:25
+Message:
+republish the version
+----
+Modified : /wsijk/tags/wsplayer-20160902.aar
+
+Revision: 23704
+Author: wuym
+Date: 2016年9月5日 17:28:08
+Message:
+add a log info for hls to find the seqno
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 23687
+Author: wuym
+Date: 2016年9月2日 18:20:19
+Message:
+fix issues:
+1. can't seek to start position when play m3u8   
+----
+Added : /wsijk/tags/wsplayer-20160902.aar
+
+Revision: 23639
+Author: huangzl
+Date: 2016年9月1日 19:42:09
+Message:
+fix to avoid zizi sound when begin play video
+***********
+修改日期：2016.9.1 19:42:09
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2754304 视频节目刚开始载入播放时会概率出现“滋滋”声
+问题原因：目前怀疑是频道关闭或重新开启播放时，麦克的开启关闭引起的电流声
+修改方法：在视频刚开始播放的时候，声音一开始先设置为静音，延迟200ms后再开启声音，避开这个滋滋声
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_aout_android_audiotrack.c
+
+Revision: 23634
+Author: wuym
+Date: 2016年9月1日 18:24:07
+Message:
+fix seek to start position issue when review the program
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/hls.c
+
+Revision: 23592
+Author: wuym
+Date: 2016年8月31日 18:25:07
+Message:
+fix issues:
+1. can't support aac in 4K
+2. http reconnect
+3. select the first audio stream in multiple streams
+4. support flv
+5. fix A/V not sync
+----
+Added : /wsijk/tags/wsplayer-20160831.aar
+
+Revision: 23590
+Author: huangzl
+Date: 2016年8月31日 18:06:25
+Message:
+add to support flv format
+***********
+修改日期：2016.8.31 18:06:25
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：支持flv格式
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+
+Revision: 23587
+Author: huangzl
+Date: 2016年8月31日 17:02:05
+Message:
+change to select first audio stream if multi audio streams
+***********
+修改日期：2016.8.31 17:02:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：直播发现过声音对不上画面
+问题原因：存在多路音轨，而ffmpeg默认选择的音轨对不上画面
+修改方法：默认选择第一音轨（这个后面有个新需求，可以有音轨和视频轨道的用户自由选择）
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 23527
+Author: huangzl
+Date: 2016年8月30日 17:39:53
+Message:
+config auto reconnect after disconnect before EOF
+***********
+修改日期：2016.8.30 17:39:53
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2699194 长时间暂停大概在15分钟-20分钟的时候，恢复播放时提示出错
+问题原因：http连接不是长连接，在长时间不请求数据情况下http会断开，而ffmpeg默认http没有重连
+修改方法：开启http的重连机制（这个修改后面引入了一个bug，就是会造成直播的重复2-3遍播放，其实，对应Hls是不需要http重连）
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/http.c
+
+Revision: 23522
+Author: huangzl
+Date: 2016年8月30日 15:07:12
+Message:
+reduce video sync delay
+***********
+修改日期：2016.8.30 15:07:12
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：视频刚开始播放会有一个同步过程，当视频快于音频时，视频的显示速度会慢一倍
+问题原因：A-V同步时，如果视频快于音频，那么视频的渲染周期x2，也就是显示速度会慢一倍
+修改方法：视频的渲染周期缩短，减轻用户感觉视频显示慢的感觉
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 23484
+Author: wuym
+Date: 2016年8月29日 14:18:02
+Message:
+fix he issue that audio in 4K can't be played
+----
+Modified : /wsijk/trunk/extra/ffmpeg31/libavformat/options_table.h
+
+Revision: 23468
+Author: huangzl
+Date: 2016年8月26日 19:10:42
+Message:
+reset video display delay time to default value when video sync audio
+***********
+修改日期：2016.8.26 19:10:42
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：音视频不同步现象
+问题原因：r22876修改引起，A-V同步时，当视频快于音频时，视频显示速度还是快导致个别情况一直无法同步
+修改方法：还原r22876的修改
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 23301
+Author: huangzl
+Date: 2016年8月19日 10:47:53
+Message:
+update new aar, add ms mpeg4 decoder
+***********
+修改日期：2016.8.19 10:47:53
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新aar文件
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/wsplayer-20160819.aar
+
+Revision: 23242
+Author: wuym
+Date: 2016年8月18日 14:03:45
+Message:
+add new decoder
+----
+Added : /wsijk/tags/wsplayer-20160818.aar
+
+Revision: 23234
+Author: huangzl
+Date: 2016年8月18日 11:17:47
+Message:
+add ms mpeg4 decoder
+***********
+修改日期：2016.8.18 11:17:47
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：支持msmepg4解码
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+
+Revision: 23224
+Author: wuym
+Date: 2016年8月17日 16:51:10
+Message:
+new aar version
+----
+Added : /wsijk/tags/wsplayer-20160817.aar
+
+Revision: 22974
+Author: wuym
+Date: 2016年8月8日 18:18:28
+Message:
+update ffmpeg3.0 to ffmpeg3.1
+----
+Added : /wsijk/tags/wsplayer-20160808-1.aar
+
+Revision: 22970
+Author: huangzl
+Date: 2016年8月8日 16:49:53
+Message:
+patch: ffmpeg upgrade to ff3.1
+***********
+修改日期：2016.8.8 16:49:53
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：补丁更新：ffmpeg更新到3.1版本（https://github.com/Bilibili/ijkplayer上面更新到ffmpeg3.1）
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/async.c
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijkavformat.h
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijkinject.c
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijklongurl.c
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijksegment.c
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijkurlhook.c
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/url.h
+Deleted : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/utils.c
+
+Revision: 22969
+Author: huangzl
+Date: 2016年8月8日 16:46:01
+Message:
+patch: ffmpeg upgrade to ff3.1
+***********
+修改日期：2016.8.8 16:46:01
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：补丁更新：ffmpeg更新到3.1版本（https://github.com/Bilibili/ijkplayer上面更新到ffmpeg3.1）
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+Modified : /wsijk/trunk/copy_code.sh
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/Android.mk
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/allformats.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijklivehook.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijkmediadatasource.c
+Modified : /wsijk/trunk/init-android.sh
+
+Revision: 22968
+Author: huangzl
+Date: 2016年8月8日 16:42:52
+Message:
+add ffmpeg3.1 version of ijkplayer branch
+***********
+修改日期：2016.8.8 16:42:52
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：补丁更新：ffmpeg更新到3.1版本（https://github.com/Bilibili/ijkplayer上面更新到ffmpeg3.1）
+修改方法：
+修改文件：
+***********
+（文件列表省略，具体文件在/trunk/extra/ffmpeg31目录下）
+
+Revision: 22963
+Author: wuym
+Date: 2016年8月8日 16:06:38
+Message:
+new version fix A/V sync issue
+----
+Added : /wsijk/tags/release_20160808.aar
+
+Revision: 22937
+Author: huangzl
+Date: 2016年8月5日 14:54:40
+Message:
+save ijkplayer github new patch
+***********
+修改日期：2016.8.5 14:54:40
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：保存https://github.com/Bilibili/ijkplayer上面更新到ffmpeg3.1上修改的补丁
+修改方法：
+修改文件：
+***********
+（文件列表省略，具体文件在/trunk/doc/patch目录下）
+
+Revision: 22876
+Author: huangzl
+Date: 2016年8月3日 17:15:34
+Message:
+reduce video sync delay, less than AV_SYNC_THRESHOLD_MIN
+***********
+修改日期：2016.8.3 17:15:34
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：视频刚开始播放会有一个同步过程，当视频快于音频时，视频的显示速度会慢一倍
+问题原因：A-V同步时，如果视频快于音频，那么视频的渲染周期x2，也就是显示速度会慢一倍
+修改方法：视频的渲染周期缩短，减轻用户感觉视频显示慢的感觉
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 22803
+Author: huangzl
+Date: 2016年8月1日 16:30:57
+Message:
+add to support mpeg4 video
+***********
+修改日期：2016.8.1 16:30:57
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：支持mpeg4解码
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+
+Revision: 22802
+Author: huangzl
+Date: 2016年8月1日 16:20:30
+Message:
+update ffmpeg cut document,add mpeg4 video codec
+***********
+修改日期：2016.8.1 16:20:30
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新ffmpeg裁剪文档
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/doc/ijkplayer的ffmpeg裁剪分析.docx
+
+Revision: 22717
+Author: wuym
+Date: 2016年7月28日 11:01:16
+Message:
+release_20160728.aar
+----
+Added : /wsijk/tags/release_20160728.aar
+
+Revision: 22702
+Author: huangzl
+Date: 2016年7月27日 17:33:00
+Message:
+if hls eof, notify MEDIA_ERROR_TIMED_OUT error event
+***********
+修改日期：2016.7.27 17:33:00
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：bug2772697 断网后联网直播/回看没有自动加载数据
+问题原因：断网后，ijkplayer数据播放完会进入一个无限循环，只有seek或者退出才能退出
+修改方法：断网后，ijkplayer上报-110错误，cloudtv逻辑层会进行断网重连处理
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+
+Revision: 22313
+Author: wuym
+Date: 2016年7月13日 14:16:10
+Message:
+new aar release for support more audio decoder
+----
+Added : /wsijk/tags/release_20160713.aar
+
+Revision: 22306
+Author: huangzl
+Date: 2016年7月13日 10:53:51
+Message:
+update ijkplayer ffmpeg cutting document
+***********
+修改日期：2016.7.13 10:53:51
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新ffmpeg的裁剪文档
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/doc/ijkplayer流媒体缓冲流程分析.docx
+Modified : /wsijk/trunk/doc/ijkplayer的ffmpeg裁剪分析.docx
+
+Revision: 22304
+Author: huangzl
+Date: 2016年7月13日 10:52:04
+Message:
+add normal full audio/video format/decoder support
+***********
+修改日期：2016.7.13 10:52:04
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：支持常规的音视频格式
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/config/module-ws.sh
+
+Revision: 22117
+Author: wuym
+Date: 2016年7月6日 14:52:34
+Message:
+update api doc about seeking issue
+----
+Modified : /wsijk/trunk/doc/IMediaPlayer API 文档.docx
+
+Revision: 22104
+Author: zhuangwy
+Date: 2016年7月6日 11:10:57
+Message:
+代码框图
+----
+Added : /wsijk/trunk/doc/代码框图
+Added : /wsijk/trunk/doc/代码框图/播放停止流程.jpg
+Added : /wsijk/trunk/doc/代码框图/流程.vsdx
+Added : /wsijk/trunk/doc/代码框图/线程模型.jpg
+Added : /wsijk/trunk/doc/代码框图/线程模型.vsdx
+
+Revision: 22102
+Author: huangzl
+Date: 2016年7月6日 9:28:05
+Message:
+add release note
+***********
+修改日期：2016.7.6 9:28:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：增加release_note.txt
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/release_note.txt
+
+Revision: 22084
+Author: huangzl
+Date: 2016年7月5日 17:44:03
+Message:
+add video's SAR and DAR document
+***********
+修改日期：2016.7.5 17:44:03
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加视频SAR/DAR文档
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/Video的SAR与DAR.docx
+
+Revision: 22083
+Author: huangzl
+Date: 2016年7月5日 17:28:20
+Message:
+add ijkplayer stream buffering process document
+***********
+修改日期：2016.7.5 17:28:20
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加ijkplayer数据缓冲流程文档
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/ijkplayer流媒体缓冲流程分析.docx
+
+Revision: 21968
+Author: wuym
+Date: 2016年7月1日 9:46:12
+Message:
+arm64 & armv7a update
+----
+Added : /wsijk/tags/release_20160701.aar
+
+Revision: 21955
+Author: wuym
+Date: 2016年6月30日 17:57:56
+Message:
+publish new aar version
+----
+Added : /wsijk/tags/release_20160630.aar
+
+Revision: 21954
+Author: huangzl
+Date: 2016年6月30日 17:44:38
+Message:
+update ijkplayer ffmpeg cutting document
+***********
+修改日期：2016.6.30 17:44:38
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新ffmpeg裁剪文档
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/doc/ijkplayer的ffmpeg裁剪分析.docx
+
+Revision: 21952
+Author: huangzl
+Date: 2016年6月30日 17:43:29
+Message:
+cut ffmpeg lib
+***********
+修改日期：2016.6.30 17:43:29
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加ws自己的ffmpeg的module配置，裁剪ffmpeg
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/android/contrib/tools/do-compile-ffmpeg.sh
+Modified : /wsijk/trunk/android/contrib/tools/do-compile-openssl.sh
+Modified : /wsijk/trunk/build_android.sh
+Added : /wsijk/trunk/config/module-ws.sh
+Modified : /wsijk/trunk/config/module.sh
+
+Revision: 21922
+Author: wuym
+Date: 2016年6月29日 16:23:32
+Message:
+update doc
+----
+Modified : /wsijk/trunk/doc/IMediaPlayer API 文档.docx
+
+Revision: 21921
+Author: wuym
+Date: 2016年6月29日 16:13:49
+Message:
+更新ImediaPlayer Api文档 H265和mpegts硬解码使能
+----
+Modified : /wsijk/trunk/doc/IMediaPlayer API 文档.docx
+
+Revision: 21909
+Author: wuym
+Date: 2016年6月29日 14:58:14
+Message:
+optimize seek issue
+----
+Added : /wsijk/tags/release_20160629.aar
+
+Revision: 21890
+Author: huangzl
+Date: 2016年6月29日 11:16:24
+Message:
+merge ijkplayer github patch
+***********
+修改日期：2016.6.29 11:16:24
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：补丁更新：更新https://github.com/Bilibili/ijkplayer上面的修改
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/NEWS.md
+Modified : /wsijk/trunk/android/contrib/tools/do-detect-env.sh
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_options.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkavformat/ijklivehook.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkplayer.h
+Modified : /wsijk/trunk/ijkmedia/ijksdl/android/ijksdl_vout_overlay_android_mediacodec.c
+Modified : /wsijk/trunk/init-android-openssl.sh
+Modified : /wsijk/trunk/init-ios-openssl.sh
+
+Revision: 21889
+Author: huangzl
+Date: 2016年6月29日 10:58:07
+Message:
+update openssl from 1.0.2g to 1.0.2h (lost files)
+***********
+修改日期：2016.6.29 10:58:07
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：补丁更新：更新openssl, 更新https://github.com/Bilibili/ijkplayer上面的修改
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/extra/openssl/doc/crypto/EVP_EncodeInit.pod
+Added : /wsijk/trunk/extra/openssl/doc/ssl/SSL_CTX_set_alpn_select_cb.pod
+
+Revision: 21888
+Author: huangzl
+Date: 2016年6月29日 10:57:02
+Message:
+update openssl from 1.0.2g to 1.0.2h
+***********
+修改日期：2016.6.29 10:57:02
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：补丁更新：更新openssl, 更新https://github.com/Bilibili/ijkplayer上面的修改
+修改方法：
+修改文件：
+***********
+(修改文件省略，具体修改在/trunk/extra/openssl目录)
+
+Revision: 21887
+Author: wuym
+Date: 2016年6月29日 10:56:02
+Message:
+add comment for all added or modified code
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffmsg_queue.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkplayer.c
+
+Revision: 21886
+Author: wuym
+Date: 2016年6月29日 10:39:00
+Message:
+create a timeout message mechanism to optimize the seeking issue
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffmsg_queue.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ijkplayer.c
+
+Revision: 21869
+Author: huangzl
+Date: 2016年6月28日 17:58:12
+Message:
+delete git
+***********
+修改日期：2016.6.28 17:58:12
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：删除.git相关文件
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/trunk/.git
+Deleted : /wsijk/trunk/extra/ffmpeg/.git
+Deleted : /wsijk/trunk/extra/libyuv/.git
+Deleted : /wsijk/trunk/extra/openssl/.git
+
+Revision: 21867
+Author: huangzl
+Date: 2016年6月28日 17:46:51
+Message:
+save ijkplayer, ffmpeg, openssl,libyuv git log
+***********
+修改日期：2016.6.28 17:46:51
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：保存https://github.com/Bilibili/ijkplayer上面相关ffmpeg,ijkplayer,libyuv,openssl的修改log记录
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/patch/ffmpeg_git.log
+Added : /wsijk/trunk/doc/patch/ijkplayer_git.log
+Added : /wsijk/trunk/doc/patch/libyuv_git.log
+Added : /wsijk/trunk/doc/patch/openssl_git.log
+
+Revision: 21864
+Author: huangzl
+Date: 2016年6月28日 17:35:24
+Message:
+save ijkplayer github new patch
+***********
+修改日期：2016.6.28 17:35:24
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：保存https://github.com/Bilibili/ijkplayer上面相关修改的patch文件
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/patch
+Added : /wsijk/trunk/doc/patch/0001-ios-IJKFFMoviePlayerController-always-calculate-prep.patch
+Added : /wsijk/trunk/doc/patch/0002-ijkavformat-ijklivehook-pass-serveral-options-down-t.patch
+Added : /wsijk/trunk/doc/patch/0003-ff_ffplay-increase-min_value-of-max_fps-to-1.patch
+Added : /wsijk/trunk/doc/patch/0004-ff_ffplay-remove-check-for-dropping-frame-when-max_f.patch
+Added : /wsijk/trunk/doc/patch/0005-ff_ffplay-apply-swresample-options.patch
+Added : /wsijk/trunk/doc/patch/0006-ff_ffplay-use-preset-center_mix_level-for-5.1-channe.patch
+Added : /wsijk/trunk/doc/patch/0007-ff_ffplay-check-frames-channel_layout-insteadof-audi.patch
+Added : /wsijk/trunk/doc/patch/0008-ff_ffplay-swr_opts-should-be-set-before-swr_init.patch
+Added : /wsijk/trunk/doc/patch/0009-fix-cache-display.patch
+Added : /wsijk/trunk/doc/patch/0010-ios-IJKFFMonitor-report-sampleRate-and-channelLayout.patch
+Added : /wsijk/trunk/doc/patch/0011-openssl-upgrade-to-1.0.2h.patch
+Added : /wsijk/trunk/doc/patch/0012-NEWS-mention-openssl-upgrade.patch
+Added : /wsijk/trunk/doc/patch/0013-android-build-support-NDKr12.patch
+Added : /wsijk/trunk/doc/patch/0014-android-mediacodec-fix-log-typo.patch
+
+Revision: 21853
+Author: huangzl
+Date: 2016年6月28日 16:32:05
+Message:
+add ijkplayer ffmpeg document
+***********
+修改日期：2016.6.28 16:32:05
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加ffmpeg的相关参数文档
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/ffmpeg
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg-configure.docx
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_bsfs_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_decoders_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_demuxers_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_encoders_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_filters_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_hwaccels_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_indevs_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_muxers_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_outdevs_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_parsers_list.txt
+Added : /wsijk/trunk/doc/ffmpeg/ijkplayer-ffmpeg_protocols_list.txt
+Added : /wsijk/trunk/doc/ijkplayer的ffmpeg裁剪分析.docx
+
+Revision: 21841
+Author: huangzl
+Date: 2016年6月28日 10:25:08
+Message:
+update ijkplayer mediacodec document
+***********
+修改日期：2016.6.28 10:25:08
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：更新mediacodec智能硬解文档
+修改方法：
+修改文件：
+***********
+----
+Modified : /wsijk/trunk/doc/ijkplayer智能硬解分析.docx
+
+Revision: 21831
+Author: wuym
+Date: 2016年6月27日 18:26:11
+Message:
+upload IMediaPlayer API 文档.docx
+----
+Added : /wsijk/trunk/doc/IMediaPlayer API 文档.docx
+
+Revision: 21830
+Author: huangzl
+Date: 2016年6月27日 18:25:35
+Message:
+add ijkplayer mediacodec document
+***********
+修改日期：2016.6.27 18:25:35
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加mediacodec智能硬解文档
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/ijkplayer智能硬解分析.docx
+
+Revision: 21827
+Author: wuym
+Date: 2016年6月27日 18:00:10
+Message:
+publish a new aar that fix the seek issue and openssl
+----
+Added : /wsijk/tags/release_20160627.aar
+
+Revision: 21814
+Author: wuym
+Date: 2016年6月27日 15:11:26
+Message:
+fix seek incorrectly when drag the seekbar
+----
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay.c
+Modified : /wsijk/trunk/ijkmedia/ijkplayer/ff_ffplay_def.h
+
+Revision: 21812
+Author: wuym
+Date: 2016年6月27日 15:03:55
+Message:
+add demo WsVideoTest for debug
+
+Revision: 21811
+Author: wuym
+Date: 2016年6月27日 14:58:14
+Message:
+create a demo folder
+----
+Added : /wsijk/trunk/android/demo
+
+Revision: 21739
+Author: huangzl
+Date: 2016年6月23日 13:50:26
+Message:
+add ijkplayer base version source codes
+***********
+修改日期：2016.6.23 13:50:26
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加ijkplayer基础代码
+修改方法：
+修改文件：
+***********
+（添加代码省略，trunk目录下）
+
+Revision: 21738
+Author: huangzl
+Date: 2016年6月23日 13:46:08
+Message:
+delete trunk
+***********
+修改日期：2016.6.23 13:46:08
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：删除之前提交的错误代码
+修改方法：
+修改文件：
+***********
+----
+Deleted : /wsijk/trunk
+
+Revision: 21731
+Author: huangzl
+Date: 2016年6月23日 10:48:56
+Message:
+add 20160622 base release version
+***********
+修改日期：2016.6.23 10:48:56
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加基础的release版本（提供给apk使用）
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/tags/release_20160622.zip
+
+Revision: 21730
+Author: huangzl
+Date: 2016年6月23日 10:26:43
+Message:
+add ijkplayer develop documents
+***********
+修改日期：2016.6.23 10:26:43
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加ijkplayer开发基础文档
+修改方法：
+修改文件：
+***********
+----
+Added : /wsijk/trunk/doc/Ijkplayer环境搭建.docx
+Added : /wsijk/trunk/doc/ijkplayer svn下载编译.docx
+Added : /wsijk/trunk/doc/ijkplayer源码目录结构说明.docx
+
+Revision: 21729
+Author: huangzl
+Date: 2016年6月23日 10:11:00
+Message:
+add ijkplayer base version codes
+***********
+修改日期：2016.6.23 10:11:00
+新版本号：
+旧版本号：
+修改人员：huangzl
+问题现象：
+问题原因：添加ijkplayer基础代码（这次的提交后面会删除，当时主要是因为git文件关系做了删除重新提交的处理）
+修改方法：
+修改文件：
+***********
+
+
+

@@ -1,0 +1,25 @@
+From c51e274867d19feb029cb9b2ad73c5c9eea50cee Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 18 Jul 2016 18:11:55 +0800
+Subject: [PATCH 61/73] android/jni: fix a memory leak
+
+---
+ ijkmedia/ijkplayer/android/ijkplayer_jni.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/android/ijkplayer_jni.c b/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+index 8c99eae..8faba9f 100644
+--- a/ijkmedia/ijkplayer/android/ijkplayer_jni.c
++++ b/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+@@ -702,7 +702,7 @@ IjkMediaPlayer_native_setup(JNIEnv *env, jobject thiz, jobject weak_this)
+     jni_set_media_player(env, thiz, mp);
+     ijkmp_set_weak_thiz(mp, (*env)->NewGlobalRef(env, weak_this));
+     ijkmp_set_inject_opaque(mp, ijkmp_get_weak_thiz(mp));
+-    ijkmp_android_set_mediacodec_select_callback(mp, mediacodec_select_callback, (*env)->NewGlobalRef(env, weak_this));
++    ijkmp_android_set_mediacodec_select_callback(mp, mediacodec_select_callback, ijkmp_get_weak_thiz(mp));
+ 
+ LABEL_RETURN:
+     ijkmp_dec_ref_p(&mp);
+-- 
+1.9.1
+

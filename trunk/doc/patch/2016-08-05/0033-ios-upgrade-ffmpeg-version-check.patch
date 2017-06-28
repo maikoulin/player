@@ -1,0 +1,25 @@
+From feddf4cedd129f026fd4f90c0a39dbfe7b830fc5 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 20:28:39 +0800
+Subject: [PATCH 33/73] ios: upgrade ffmpeg version check
+
+---
+ ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
+index 0917eec..63398e7 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
+@@ -34,7 +34,7 @@
+ #include "ijkplayer/version.h"
+ #include "libavformat/ijkavformat.h"
+ 
+-static const char *kIJKFFRequiredFFmpegVersion = "ff3.0--ijk0.5.0--dev0.4.5--rc11";
++static const char *kIJKFFRequiredFFmpegVersion = "ff3.1--ijk0.6.0--20160627--001";
+ 
+ @interface IJKFFMoviePlayerController()
+ 
+-- 
+1.9.1
+

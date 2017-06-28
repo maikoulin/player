@@ -1,0 +1,25 @@
+From 68ae048030fdbe13d31bb51c8d6e2c6fba6ee30d Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Thu, 14 Jul 2016 16:43:49 +0800
+Subject: [PATCH 07/73] android/MediaCodec: fix dangling pointer
+
+---
+ ijkmedia/ijksdl/android/ijksdl_codec_android_mediaformat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediaformat.c b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediaformat.c
+index 028dae0..1df36ea 100644
+--- a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediaformat.c
++++ b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediaformat.c
+@@ -38,7 +38,7 @@ sdl_amedia_status_t SDL_AMediaFormat_deleteP(SDL_AMediaFormat** aformat)
+     if (!aformat)
+         return SDL_AMEDIA_OK;
+     sdl_amedia_status_t amc_ret = SDL_AMediaFormat_delete(*aformat);
+-    aformat = NULL;
++    *aformat = NULL;
+     return amc_ret;
+ }
+ 
+-- 
+1.9.1
+

@@ -1,0 +1,2039 @@
+From e8b5705227074585d2e68d71c54b620f2e32be5e Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 16:51:42 +0800
+Subject: [PATCH 19/73] ijkavformat: using new ffurl_open_whitelist
+
+---
+ ijkmedia/ijkplayer/ff_ffplay.c                     |   2 +-
+ ijkmedia/ijkplayer/ijkavformat/allformats.c        |  43 --
+ ijkmedia/ijkplayer/ijkavformat/async.c             | 774 ---------------------
+ ijkmedia/ijkplayer/ijkavformat/ijkavformat.h       | 111 ---
+ ijkmedia/ijkplayer/ijkavformat/ijkinject.c         | 112 ---
+ ijkmedia/ijkplayer/ijkavformat/ijklivehook.c       |   3 +-
+ ijkmedia/ijkplayer/ijkavformat/ijklongurl.c        |  97 ---
+ ijkmedia/ijkplayer/ijkavformat/ijksegment.c        | 154 ----
+ ijkmedia/ijkplayer/ijkavformat/ijkurlhook.c        | 468 -------------
+ ijkmedia/ijkplayer/ijkavformat/utils.c             |  39 --
+ .../IJKMediaPlayer.xcodeproj/project.pbxproj       |  28 -
+ .../IJKMediaPlayer/IJKFFMoviePlayerController.m    |   2 +-
+ 12 files changed, 4 insertions(+), 1829 deletions(-)
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/async.c
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/ijkavformat.h
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/ijkinject.c
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/ijklongurl.c
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/ijksegment.c
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/ijkurlhook.c
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/utils.c
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 5d3755c..37d382c 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -60,7 +60,7 @@
+ #endif
+ 
+ #include "ijksdl/ijksdl_log.h"
+-#include "ijkavformat/ijkavformat.h"
++#include "libavformat/ijkavformat.h"
+ #include "ff_cmdutils.h"
+ #include "ff_fferror.h"
+ #include "ff_ffpipeline.h"
+diff --git a/ijkmedia/ijkplayer/ijkavformat/allformats.c b/ijkmedia/ijkplayer/ijkavformat/allformats.c
+index 5d93fcf..d649b64 100644
+--- a/ijkmedia/ijkplayer/ijkavformat/allformats.c
++++ b/ijkmedia/ijkplayer/ijkavformat/allformats.c
+@@ -24,39 +24,12 @@
+ #include "libavformat/url.h"
+ #include "libavformat/version.h"
+ 
+-#define FF_REGISTER_PROTOCOL(x)                                         \
+-    {                                                                   \
+-        extern URLProtocol ff_##x##_protocol;                           \
+-        ijkav_register_protocol(&ff_##x##_protocol);                    \
+-    }
+-
+-#define IJK_REGISTER_PROTOCOL(x)                                        \
+-    {                                                                   \
+-        extern URLProtocol ijkff_##x##_protocol;                        \
+-        ijkav_register_protocol(&ijkff_##x##_protocol);                 \
+-    }
+-
+ #define IJK_REGISTER_DEMUXER(x)                                         \
+     {                                                                   \
+         extern AVInputFormat ijkff_##x##_demuxer;                       \
+         ijkav_register_input_format(&ijkff_##x##_demuxer);              \
+     }
+ 
+-
+-static struct URLProtocol *ijkav_find_protocol(const char *proto_name)
+-{
+-    URLProtocol *up = NULL;
+-    if (!proto_name)
+-        return NULL;
+-    while ((up = ffurl_protocol_next(up)) != NULL) {
+-        if (!up->name)
+-            continue;
+-        if (!strcmp(proto_name, up->name))
+-            break;
+-    }
+-    return up;
+-}
+-
+ static struct AVInputFormat *ijkav_find_input_format(const char *iformat_name)
+ {
+     AVInputFormat *fmt = NULL;
+@@ -71,16 +44,6 @@ static struct AVInputFormat *ijkav_find_input_format(const char *iformat_name)
+     return NULL;
+ }
+ 
+-static void ijkav_register_protocol(URLProtocol *protocol)
+-{
+-    if (ijkav_find_protocol(protocol->name)) {
+-        av_log(NULL, AV_LOG_WARNING, "skip     protocol: %s (duplicated)\n", protocol->name);
+-    } else {
+-        av_log(NULL, AV_LOG_INFO,    "register protocol: %s\n", protocol->name);
+-        ffurl_register_protocol(protocol);
+-    }
+-}
+-
+ static void ijkav_register_input_format(AVInputFormat *iformat)
+ {
+     if (ijkav_find_input_format(iformat->name)) {
+@@ -103,15 +66,9 @@ void ijkav_register_all(void)
+ 
+     /* protocols */
+     av_log(NULL, AV_LOG_INFO, "===== custom modules begin =====\n");
+-    FF_REGISTER_PROTOCOL(async);
+-    IJK_REGISTER_PROTOCOL(ijkhttphook);
+-    IJK_REGISTER_PROTOCOL(ijkinject);
+-    IJK_REGISTER_PROTOCOL(ijklongurl);
+ #ifdef __ANDROID__
+     IJK_REGISTER_PROTOCOL(ijkmediadatasource);
+ #endif
+-    IJK_REGISTER_PROTOCOL(ijksegment);
+-    IJK_REGISTER_PROTOCOL(ijktcphook);
+ 
+     /* demuxers */
+     IJK_REGISTER_DEMUXER(ijklivehook);
+diff --git a/ijkmedia/ijkplayer/ijkavformat/async.c b/ijkmedia/ijkplayer/ijkavformat/async.c
+deleted file mode 100644
+index eaffff6..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/async.c
++++ /dev/null
+@@ -1,774 +0,0 @@
+-/*
+- * Input async protocol.
+- * Copyright (c) 2015 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of FFmpeg.
+- *
+- * FFmpeg is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * FFmpeg is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with FFmpeg; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- *
+- * Based on libavformat/cache.c by Michael Niedermayer
+- */
+-
+- /**
+- * @TODO
+- *      support timeout
+- *      support work with concatdec, hls
+- */
+-
+-#include "libavutil/avassert.h"
+-#include "libavutil/avstring.h"
+-#include "libavutil/error.h"
+-#include "libavutil/fifo.h"
+-#include "libavutil/log.h"
+-#include "libavutil/opt.h"
+-#include "libavutil/thread.h"
+-#include "libavutil/time.h"
+-#include "url.h"
+-#include <stdint.h>
+-
+-#include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
+-
+-#if HAVE_UNISTD_H
+-#include <unistd.h>
+-#endif
+-
+-#define SHORT_SEEK_THRESHOLD    (256 * 1024)
+-
+-typedef struct RingBuffer
+-{
+-    AVFifoBuffer *fifo;
+-    int           read_back_capacity;
+-
+-    int           read_pos;
+-} RingBuffer;
+-
+-typedef struct Context {
+-    AVClass        *class;
+-    URLContext     *inner;
+-
+-    int             seek_request;
+-    int64_t         seek_pos;
+-    int             seek_whence;
+-    int             seek_completed;
+-    int64_t         seek_ret;
+-
+-    int             inner_io_error;
+-    int             io_error;
+-    int             io_eof_reached;
+-
+-    int64_t         logical_pos;
+-    int64_t         logical_size;
+-    RingBuffer      ring;
+-
+-    pthread_cond_t  cond_wakeup_main;
+-    pthread_cond_t  cond_wakeup_background;
+-    pthread_mutex_t mutex;
+-    pthread_t       async_buffer_thread;
+-
+-    int             abort_request;
+-    AVIOInterruptCB interrupt_callback;
+-
+-    /* options */
+-    int64_t         opaque;
+-    int64_t         forwards_capacity;
+-    int64_t         backwards_capacity;
+-} Context;
+-
+-static int ring_init(RingBuffer *ring, int64_t capacity, int64_t read_back_capacity)
+-{
+-    memset(ring, 0, sizeof(RingBuffer));
+-    ring->fifo = av_fifo_alloc((unsigned int)(capacity + read_back_capacity));
+-    if (!ring->fifo)
+-        return AVERROR(ENOMEM);
+-
+-    ring->read_back_capacity = (int)read_back_capacity;
+-    return 0;
+-}
+-
+-static void ring_destroy(RingBuffer *ring)
+-{
+-    av_fifo_freep(&ring->fifo);
+-}
+-
+-static void ring_reset(RingBuffer *ring)
+-{
+-    av_fifo_reset(ring->fifo);
+-    ring->read_pos = 0;
+-}
+-
+-static int ring_size(RingBuffer *ring)
+-{
+-    return av_fifo_size(ring->fifo) - ring->read_pos;
+-}
+-
+-static int ring_space(RingBuffer *ring)
+-{
+-    return av_fifo_space(ring->fifo);
+-}
+-
+-static int ring_generic_read(RingBuffer *ring, void *dest, int buf_size, void (*func)(void*, void*, int))
+-{
+-    int ret;
+-
+-    av_assert2(buf_size <= ring_size(ring));
+-    ret = av_fifo_generic_peek_at(ring->fifo, dest, ring->read_pos, buf_size, func);
+-    ring->read_pos += buf_size;
+-
+-    if (ring->read_pos > ring->read_back_capacity) {
+-        av_fifo_drain(ring->fifo, ring->read_pos - ring->read_back_capacity);
+-        ring->read_pos = ring->read_back_capacity;
+-    }
+-
+-    return ret;
+-}
+-
+-static int ring_generic_write(RingBuffer *ring, void *src, int size, int (*func)(void*, void*, int))
+-{
+-    av_assert2(size <= ring_space(ring));
+-    return av_fifo_generic_write(ring->fifo, src, size, func);
+-}
+-
+-static int ring_size_of_read_back(RingBuffer *ring)
+-{
+-    return ring->read_pos;
+-}
+-
+-static int ring_drain(RingBuffer *ring, int offset)
+-{
+-    av_assert2(offset >= -ring_size_of_read_back(ring));
+-    av_assert2(offset <= -ring_size(ring));
+-    ring->read_pos += offset;
+-    return 0;
+-}
+-
+-static int async_check_interrupt(void *arg)
+-{
+-    URLContext *h   = arg;
+-    Context    *c   = h->priv_data;
+-
+-    if (c->abort_request)
+-        return 1;
+-
+-    if (ff_check_interrupt(&c->interrupt_callback))
+-        c->abort_request = 1;
+-
+-    return c->abort_request;
+-}
+-
+-static int wrapped_url_read(void *src, void *dst, int size)
+-{
+-    URLContext *h   = src;
+-    Context    *c   = h->priv_data;
+-    int         ret;
+-
+-    ret = ffurl_read(c->inner, dst, size);
+-    c->inner_io_error = ret < 0 ? ret : 0;
+-
+-    return ret;
+-}
+-
+-static void call_inject_statistic(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-    IjkAVInjectCallback inject_callback = ijkav_get_inject_callback();
+-    void *opaque = (void *) (intptr_t) c->opaque;
+-
+-    if (opaque && inject_callback) {
+-        IJKAVInject_AsyncStatistic stat;
+-        stat.size = sizeof(stat);
+-        stat.buf_forwards  = ring_size(&c->ring);
+-        stat.buf_backwards = ring_size_of_read_back(&c->ring);
+-        stat.buf_capacity  = c->forwards_capacity + c->backwards_capacity;
+-
+-        inject_callback(opaque, IJKAVINJECT_ASYNC_STATISTIC, &stat, sizeof(stat));
+-    }
+-}
+-
+-static void call_inject_async_fill_speed(URLContext *h, int is_full_speed, int64_t bytes, int64_t elapsed_micro)
+-{
+-    Context *c = h->priv_data;
+-    IjkAVInjectCallback inject_callback = ijkav_get_inject_callback();
+-    void *opaque = (void *) (intptr_t) c->opaque;
+-    int64_t elapsed_milli = elapsed_micro / 1000;
+-
+-    if (opaque && inject_callback && bytes > 0 && elapsed_milli > 0) {
+-        IJKAVInject_AsyncReadSpeed stat;
+-        stat.size = sizeof(stat);
+-        stat.is_full_speed = is_full_speed;
+-        stat.io_bytes      = bytes;
+-        stat.elapsed_milli = elapsed_milli;
+-
+-        inject_callback(opaque, IJKAVINJECT_ASYNC_READ_SPEED, &stat, sizeof(stat));
+-    }
+-}
+-
+-static void *async_buffer_task(void *arg)
+-{
+-    URLContext   *h    = arg;
+-    Context      *c    = h->priv_data;
+-    RingBuffer   *ring = &c->ring;
+-    int           ret  = 0;
+-    int64_t       seek_ret;
+-    int           is_full_speed = 1;
+-    int64_t       count_bytes = 0;
+-    int64_t       count_start_time_micro = av_gettime_relative();
+-
+-    while (1) {
+-        int fifo_space, to_copy;
+-
+-        pthread_mutex_lock(&c->mutex);
+-        if (async_check_interrupt(h)) {
+-            c->io_eof_reached = 1;
+-            c->io_error       = AVERROR_EXIT;
+-            pthread_cond_signal(&c->cond_wakeup_main);
+-            pthread_mutex_unlock(&c->mutex);
+-            break;
+-        }
+-
+-        if (c->seek_request) {
+-            seek_ret = ffurl_seek(c->inner, c->seek_pos, c->seek_whence);
+-            if (seek_ret < 0) {
+-                c->io_eof_reached = 1;
+-                c->io_error       = (int)seek_ret;
+-            } else {
+-                c->io_eof_reached = 0;
+-                c->io_error       = 0;
+-            }
+-
+-            c->seek_completed = 1;
+-            c->seek_ret       = seek_ret;
+-            c->seek_request   = 0;
+-
+-            ring_reset(ring);
+-
+-            pthread_cond_signal(&c->cond_wakeup_main);
+-            pthread_mutex_unlock(&c->mutex);
+-
+-            is_full_speed = 0;
+-            continue;
+-        }
+-
+-        fifo_space = ring_space(ring);
+-        if (c->io_eof_reached || fifo_space <= 0) {
+-            pthread_cond_signal(&c->cond_wakeup_main);
+-            pthread_cond_wait(&c->cond_wakeup_background, &c->mutex);
+-            pthread_mutex_unlock(&c->mutex);
+-            is_full_speed = 0;
+-            continue;
+-        }
+-        pthread_mutex_unlock(&c->mutex);
+-
+-        to_copy = FFMIN(4096, fifo_space);
+-        ret = ring_generic_write(ring, (void *)h, to_copy, (void *)wrapped_url_read);
+-        if (ret > 0) {
+-            count_bytes += ret;
+-            if (count_bytes > FFMIN((1 * 1024 * 1024), c->forwards_capacity)) {
+-                int64_t now = av_gettime_relative();
+-                call_inject_async_fill_speed(h, is_full_speed, count_bytes, now - count_start_time_micro);
+-                is_full_speed = 1;
+-                count_bytes = 0;
+-                count_start_time_micro = now;
+-            }
+-        }
+-
+-        pthread_mutex_lock(&c->mutex);
+-        if (ret <= 0) {
+-            c->io_eof_reached = 1;
+-            if (c->inner_io_error < 0)
+-                c->io_error = c->inner_io_error;
+-        }
+-
+-        pthread_cond_signal(&c->cond_wakeup_main);
+-        pthread_mutex_unlock(&c->mutex);
+-
+-        call_inject_statistic(h);
+-    }
+-
+-    return NULL;
+-}
+-
+-static int async_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context         *c = h->priv_data;
+-    int              ret;
+-    AVIOInterruptCB  interrupt_callback = {.callback = async_check_interrupt, .opaque = h};
+-
+-    av_strstart(arg, "async:", &arg);
+-
+-    ret = ring_init(&c->ring, c->forwards_capacity, c->backwards_capacity);
+-    if (ret < 0)
+-        goto fifo_fail;
+-
+-    if (c->opaque)
+-        av_dict_set_int(options, "ijkinject-opaque", c->opaque, 0);
+-
+-    /* wrap interrupt callback */
+-    c->interrupt_callback = h->interrupt_callback;
+-    ret = ffurl_open_whitelist(&c->inner, arg, flags, &interrupt_callback, options, h->protocol_whitelist);
+-    if (ret != 0) {
+-        av_log(h, AV_LOG_ERROR, "ffurl_open_whitelist failed : %s, %s\n", av_err2str(ret), arg);
+-        goto url_fail;
+-    }
+-
+-    c->logical_size = ffurl_size(c->inner);
+-    h->is_streamed  = c->inner->is_streamed;
+-
+-    ret = pthread_mutex_init(&c->mutex, NULL);
+-    if (ret != 0) {
+-        av_log(h, AV_LOG_ERROR, "pthread_mutex_init failed : %s\n", av_err2str(ret));
+-        goto mutex_fail;
+-    }
+-
+-    ret = pthread_cond_init(&c->cond_wakeup_main, NULL);
+-    if (ret != 0) {
+-        av_log(h, AV_LOG_ERROR, "pthread_cond_init failed : %s\n", av_err2str(ret));
+-        goto cond_wakeup_main_fail;
+-    }
+-
+-    ret = pthread_cond_init(&c->cond_wakeup_background, NULL);
+-    if (ret != 0) {
+-        av_log(h, AV_LOG_ERROR, "pthread_cond_init failed : %s\n", av_err2str(ret));
+-        goto cond_wakeup_background_fail;
+-    }
+-
+-    ret = pthread_create(&c->async_buffer_thread, NULL, async_buffer_task, h);
+-    if (ret) {
+-        av_log(h, AV_LOG_ERROR, "pthread_create failed : %s\n", av_err2str(ret));
+-        goto thread_fail;
+-    }
+-
+-    return 0;
+-
+-thread_fail:
+-    pthread_cond_destroy(&c->cond_wakeup_background);
+-cond_wakeup_background_fail:
+-    pthread_cond_destroy(&c->cond_wakeup_main);
+-cond_wakeup_main_fail:
+-    pthread_mutex_destroy(&c->mutex);
+-mutex_fail:
+-    ffurl_close(c->inner);
+-url_fail:
+-    ring_destroy(&c->ring);
+-fifo_fail:
+-    return ret;
+-}
+-
+-static int async_close(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-    int      ret;
+-
+-    pthread_mutex_lock(&c->mutex);
+-    c->abort_request = 1;
+-    pthread_cond_signal(&c->cond_wakeup_background);
+-    pthread_mutex_unlock(&c->mutex);
+-
+-    ret = pthread_join(c->async_buffer_thread, NULL);
+-    if (ret != 0)
+-        av_log(h, AV_LOG_ERROR, "pthread_join(): %s\n", av_err2str(ret));
+-
+-    pthread_cond_destroy(&c->cond_wakeup_background);
+-    pthread_cond_destroy(&c->cond_wakeup_main);
+-    pthread_mutex_destroy(&c->mutex);
+-    ffurl_close(c->inner);
+-    ring_destroy(&c->ring);
+-
+-    return 0;
+-}
+-
+-static int async_read_internal(URLContext *h, void *dest, int size, int read_complete,
+-                               void (*func)(void*, void*, int))
+-{
+-    Context      *c       = h->priv_data;
+-    RingBuffer   *ring    = &c->ring;
+-    int           to_read = size;
+-    int           ret     = 0;
+-
+-    pthread_mutex_lock(&c->mutex);
+-
+-    while (to_read > 0) {
+-        int fifo_size, to_copy;
+-        if (async_check_interrupt(h)) {
+-            ret = AVERROR_EXIT;
+-            break;
+-        }
+-        fifo_size = ring_size(ring);
+-        to_copy   = FFMIN(to_read, fifo_size);
+-        if (to_copy > 0) {
+-            ring_generic_read(ring, dest, to_copy, func);
+-            if (!func)
+-                dest = (uint8_t *)dest + to_copy;
+-            c->logical_pos += to_copy;
+-            to_read        -= to_copy;
+-            ret             = size - to_read;
+-
+-            if (to_read <= 0 || !read_complete)
+-                break;
+-        } else if (c->io_eof_reached) {
+-            if (ret <= 0) {
+-                if (c->io_error)
+-                    ret = c->io_error;
+-                else
+-                    ret = AVERROR_EOF;
+-            }
+-            break;
+-        }
+-        pthread_cond_signal(&c->cond_wakeup_background);
+-        pthread_cond_wait(&c->cond_wakeup_main, &c->mutex);
+-    }
+-
+-    pthread_cond_signal(&c->cond_wakeup_background);
+-    pthread_mutex_unlock(&c->mutex);
+-
+-    call_inject_statistic(h);
+-    return ret;
+-}
+-
+-static int async_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    return async_read_internal(h, buf, size, 0, NULL);
+-}
+-
+-static void fifo_do_not_copy_func(void* dest, void* src, int size) {
+-    // do not copy
+-}
+-
+-static int64_t async_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    Context      *c    = h->priv_data;
+-    RingBuffer   *ring = &c->ring;
+-    int64_t       ret;
+-    int64_t       new_logical_pos;
+-    int fifo_size;
+-    int fifo_size_of_read_back;
+-
+-    if (whence == AVSEEK_SIZE) {
+-        av_log(h, AV_LOG_TRACE, "async_seek: AVSEEK_SIZE: %"PRId64"\n", (int64_t)c->logical_size);
+-        return c->logical_size;
+-    } else if (whence == SEEK_CUR) {
+-        av_log(h, AV_LOG_TRACE, "async_seek: %"PRId64"\n", pos);
+-        new_logical_pos = pos + c->logical_pos;
+-    } else if (whence == SEEK_SET){
+-        av_log(h, AV_LOG_TRACE, "async_seek: %"PRId64"\n", pos);
+-        new_logical_pos = pos;
+-    } else {
+-        return AVERROR(EINVAL);
+-    }
+-    if (new_logical_pos < 0)
+-        return AVERROR(EINVAL);
+-
+-    fifo_size = ring_size(ring);
+-    fifo_size_of_read_back = ring_size_of_read_back(ring);
+-    if (new_logical_pos == c->logical_pos) {
+-        /* current position */
+-        return c->logical_pos;
+-    } else if ((new_logical_pos >= (c->logical_pos - fifo_size_of_read_back)) &&
+-               (new_logical_pos < (c->logical_pos + fifo_size + SHORT_SEEK_THRESHOLD))) {
+-        int pos_delta = (int)(new_logical_pos - c->logical_pos);
+-        /* fast seek */
+-        av_log(h, AV_LOG_TRACE, "async_seek: fask_seek %"PRId64" from %d dist:%d/%d\n",
+-                new_logical_pos, (int)c->logical_pos,
+-                (int)(new_logical_pos - c->logical_pos), fifo_size);
+-
+-        if (pos_delta > 0) {
+-            // fast seek forwards
+-            async_read_internal(h, NULL, pos_delta, 1, fifo_do_not_copy_func);
+-        } else {
+-            // fast seek backwards
+-            ring_drain(ring, pos_delta);
+-            call_inject_statistic(h);
+-            c->logical_pos = new_logical_pos;
+-        }
+-
+-        return c->logical_pos;
+-    } else if (c->logical_size <= 0) {
+-        /* can not seek */
+-        return AVERROR(EINVAL);
+-    } else if (new_logical_pos > c->logical_size) {
+-        /* beyond end */
+-        return AVERROR(EINVAL);
+-    }
+-
+-    pthread_mutex_lock(&c->mutex);
+-
+-    c->seek_request   = 1;
+-    c->seek_pos       = new_logical_pos;
+-    c->seek_whence    = SEEK_SET;
+-    c->seek_completed = 0;
+-    c->seek_ret       = 0;
+-
+-    while (1) {
+-        if (async_check_interrupt(h)) {
+-            ret = AVERROR_EXIT;
+-            break;
+-        }
+-        if (c->seek_completed) {
+-            if (c->seek_ret >= 0)
+-                c->logical_pos  = c->seek_ret;
+-            ret = c->seek_ret;
+-            break;
+-        }
+-        pthread_cond_signal(&c->cond_wakeup_background);
+-        pthread_cond_wait(&c->cond_wakeup_main, &c->mutex);
+-    }
+-
+-    pthread_mutex_unlock(&c->mutex);
+-
+-    call_inject_statistic(h);
+-    return ret;
+-}
+-
+-#define OFFSET(x) offsetof(Context, x)
+-#define D AV_OPT_FLAG_DECODING_PARAM
+-
+-static const AVOption options[] = {
+-    { "ijkinject-opaque",           "private data of user, passed with custom callback",
+-        OFFSET(opaque),             IJKAV_OPTION_INT64(0, INT64_MIN, INT64_MAX) },
+-    { "async-forwards-capacity",    "max bytes that may be read forward in background",
+-        OFFSET(forwards_capacity),  IJKAV_OPTION_INT64(128 * 1024, 128 * 1024, 128 * 1024 * 1024) },
+-    { "async-backwards-capacity",   "max bytes that may be seek backward without seeking in inner protocol",
+-        OFFSET(backwards_capacity), IJKAV_OPTION_INT64(128 * 1024, 128 * 1024, 128 * 1024 * 1024) },
+-    {NULL},
+-};
+-
+-#undef D
+-#undef OFFSET
+-
+-static const AVClass async_context_class = {
+-    .class_name = "Async",
+-    .item_name  = av_default_item_name,
+-    .option     = options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ff_async_protocol = {
+-    .name                = "async",
+-    .url_open2           = async_open,
+-    .url_read            = async_read,
+-    .url_seek            = async_seek,
+-    .url_close           = async_close,
+-    .priv_data_size      = sizeof(Context),
+-    .priv_data_class     = &async_context_class,
+-};
+-
+-#ifdef TEST
+-
+-#define TEST_SEEK_POS    (1536)
+-#define TEST_STREAM_SIZE (2048)
+-
+-typedef struct TestContext {
+-    AVClass        *class;
+-    int64_t         logical_pos;
+-    int64_t         logical_size;
+-
+-    /* options */
+-    int             opt_read_error;
+-} TestContext;
+-
+-static int async_test_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    TestContext *c = h->priv_data;
+-    c->logical_pos  = 0;
+-    c->logical_size = TEST_STREAM_SIZE;
+-    return 0;
+-}
+-
+-static int async_test_close(URLContext *h)
+-{
+-    return 0;
+-}
+-
+-static int async_test_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    TestContext *c = h->priv_data;
+-    int          i;
+-    int          read_len = 0;
+-
+-    if (c->opt_read_error)
+-        return c->opt_read_error;
+-
+-    if (c->logical_pos >= c->logical_size)
+-        return AVERROR_EOF;
+-
+-    for (i = 0; i < size; ++i) {
+-        buf[i] = c->logical_pos & 0xFF;
+-
+-        c->logical_pos++;
+-        read_len++;
+-
+-        if (c->logical_pos >= c->logical_size)
+-            break;
+-    }
+-
+-    return read_len;
+-}
+-
+-static int64_t async_test_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    TestContext *c = h->priv_data;
+-    int64_t      new_logical_pos;
+-
+-    if (whence == AVSEEK_SIZE) {
+-        return c->logical_size;
+-    } else if (whence == SEEK_CUR) {
+-        new_logical_pos = pos + c->logical_pos;
+-    } else if (whence == SEEK_SET){
+-        new_logical_pos = pos;
+-    } else {
+-        return AVERROR(EINVAL);
+-    }
+-    if (new_logical_pos < 0)
+-        return AVERROR(EINVAL);
+-
+-    c->logical_pos = new_logical_pos;
+-    return new_logical_pos;
+-}
+-
+-#define OFFSET(x) offsetof(TestContext, x)
+-#define D AV_OPT_FLAG_DECODING_PARAM
+-
+-static const AVOption async_test_options[] = {
+-    { "async-test-read-error",      "cause read fail",
+-        OFFSET(opt_read_error),     AV_OPT_TYPE_INT, { .i64 = 0 }, INT_MIN, INT_MAX, .flags = D },
+-    {NULL},
+-};
+-
+-#undef D
+-#undef OFFSET
+-
+-static const AVClass async_test_context_class = {
+-    .class_name = "Async-Test",
+-    .item_name  = av_default_item_name,
+-    .option     = async_test_options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ff_async_test_protocol = {
+-    .name                = "async-test",
+-    .url_open2           = async_test_open,
+-    .url_read            = async_test_read,
+-    .url_seek            = async_test_seek,
+-    .url_close           = async_test_close,
+-    .priv_data_size      = sizeof(TestContext),
+-    .priv_data_class     = &async_test_context_class,
+-};
+-
+-int main(void)
+-{
+-    URLContext   *h = NULL;
+-    int           i;
+-    int           ret;
+-    int64_t       size;
+-    int64_t       pos;
+-    int64_t       read_len;
+-    unsigned char buf[4096];
+-    AVDictionary *opts = NULL;
+-
+-    ffurl_register_protocol(&ff_async_protocol);
+-    ffurl_register_protocol(&ff_async_test_protocol);
+-
+-    /*
+-     * test normal read
+-     */
+-    ret = ffurl_open_whitelist(&h, "async:async-test:", AVIO_FLAG_READ, NULL, NULL, NULL);
+-    printf("open: %d\n", ret);
+-
+-    size = ffurl_size(h);
+-    printf("size: %"PRId64"\n", size);
+-
+-    pos = ffurl_seek(h, 0, SEEK_CUR);
+-    read_len = 0;
+-    while (1) {
+-        ret = ffurl_read(h, buf, sizeof(buf));
+-        if (ret == AVERROR_EOF) {
+-            printf("read-error: AVERROR_EOF at %"PRId64"\n", ffurl_seek(h, 0, SEEK_CUR));
+-            break;
+-        }
+-        else if (ret == 0)
+-            break;
+-        else if (ret < 0) {
+-            printf("read-error: %d at %"PRId64"\n", ret, ffurl_seek(h, 0, SEEK_CUR));
+-            goto fail;
+-        } else {
+-            for (i = 0; i < ret; ++i) {
+-                if (buf[i] != (pos & 0xFF)) {
+-                    printf("read-mismatch: actual %d, expecting %d, at %"PRId64"\n",
+-                           (int)buf[i], (int)(pos & 0xFF), pos);
+-                    break;
+-                }
+-                pos++;
+-            }
+-        }
+-
+-        read_len += ret;
+-    }
+-    printf("read: %"PRId64"\n", read_len);
+-
+-    /*
+-     * test normal seek
+-     */
+-    ret = ffurl_read(h, buf, 1);
+-    printf("read: %d\n", ret);
+-
+-    pos = ffurl_seek(h, TEST_SEEK_POS, SEEK_SET);
+-    printf("seek: %"PRId64"\n", pos);
+-
+-    read_len = 0;
+-    while (1) {
+-        ret = ffurl_read(h, buf, sizeof(buf));
+-        if (ret == AVERROR_EOF)
+-            break;
+-        else if (ret == 0)
+-            break;
+-        else if (ret < 0) {
+-            printf("read-error: %d at %"PRId64"\n", ret, ffurl_seek(h, 0, SEEK_CUR));
+-            goto fail;
+-        } else {
+-            for (i = 0; i < ret; ++i) {
+-                if (buf[i] != (pos & 0xFF)) {
+-                    printf("read-mismatch: actual %d, expecting %d, at %"PRId64"\n",
+-                           (int)buf[i], (int)(pos & 0xFF), pos);
+-                    break;
+-                }
+-                pos++;
+-            }
+-        }
+-
+-        read_len += ret;
+-    }
+-    printf("read: %"PRId64"\n", read_len);
+-
+-    ret = ffurl_read(h, buf, 1);
+-    printf("read: %d\n", ret);
+-
+-    /*
+-     * test read error
+-     */
+-    ffurl_close(h);
+-    av_dict_set_int(&opts, "async-test-read-error", -10000, 0);
+-    ret = ffurl_open_whitelist(&h, "async:async-test:", AVIO_FLAG_READ, NULL, &opts, NULL);
+-    printf("open: %d\n", ret);
+-
+-    ret = ffurl_read(h, buf, 1);
+-    printf("read: %d\n", ret);
+-
+-fail:
+-    av_dict_free(&opts);
+-    ffurl_close(h);
+-    return 0;
+-}
+-
+-#endif
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijkavformat.h b/ijkmedia/ijkplayer/ijkavformat/ijkavformat.h
+deleted file mode 100644
+index 8741aa9..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/ijkavformat.h
++++ /dev/null
+@@ -1,111 +0,0 @@
+-/*
+- * ijkavformat.h
+- *
+- * Copyright (c) 2003 Fabrice Bellard
+- * Copyright (c) 2013 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#ifndef FFPLAY__IJKAVFORMAT_IJKAVFORMAT_H
+-#define FFPLAY__IJKAVFORMAT_IJKAVFORMAT_H
+-
+-void ijkav_register_all(void);
+-
+-#define AV_PKT_FLAG_DISCONTINUITY 0x0100
+-
+-/**
+- * Injection
+- */
+-
+-typedef struct IJKAVInject_OnUrlOpenData {
+-    size_t  size;
+-    char    url[4096];      /* in, out */
+-    int     segment_index;  /* in, default = 0 */
+-    int     retry_counter;  /* in */
+-
+-    int     is_handled;     /* out, default = false */
+-    int     is_url_changed; /* out, default = false */
+-} IJKAVInject_OnUrlOpenData;
+-
+-/**
+- * Resolve segment url from concatdec
+- *
+- * @param data      IJKAVInject_OnUrlOpenData*
+- * @param data_size size of IJKAVInject_OnUrlOpenData;
+- * @return 0 if OK, AVERROR_xxx otherwise
+- */
+-#define IJKAVINJECT_CONCAT_RESOLVE_SEGMENT  0x10000
+-
+-/**
+- * Protocol open event
+- *
+- * @param data      IJKAVInject_OnUrlOpenData*
+- * @param data_size size of IJKAVInject_OnUrlOpenData;
+- * @return 0 if OK, AVERROR_xxx otherwise
+- */
+-#define IJKAVINJECT_ON_TCP_OPEN         0x10001
+-#define IJKAVINJECT_ON_HTTP_OPEN        0x10002
+-#define IJKAVINJECT_ON_HTTP_RETRY       0x10003
+-#define IJKAVINJECT_ON_LIVE_RETRY       0x10004
+-
+-
+-
+-/**
+- * Statistic
+- */
+-typedef struct IJKAVInject_AsyncStatistic {
+-    size_t  size;
+-    int64_t buf_backwards;
+-    int64_t buf_forwards;
+-    int64_t buf_capacity;
+-} IJKAVInject_AsyncStatistic;
+-
+-#define IJKAVINJECT_ASYNC_STATISTIC     0x11000
+-
+-typedef struct IJKAVInject_AsyncReadSpeed {
+-    size_t  size;
+-    int     is_full_speed;
+-    int64_t io_bytes;
+-    int64_t elapsed_milli;
+-} IJKAVInject_AsyncReadSpeed;
+-
+-#define IJKAVINJECT_ASYNC_READ_SPEED    0x11001
+-
+-typedef struct IJKAVInject_IpAddress {
+-    int  error;
+-    int  family;
+-    char ip[96];
+-    int  port;
+-} IJKAVInject_IpAddress;
+-#define IJKAVINJECT_DID_TCP_CONNECT     0x12002
+-
+-// AVAppHttpEvent
+-#define IJKAVINJECT_WILL_HTTP_OPEN      0x12100
+-#define IJKAVINJECT_DID_HTTP_OPEN       0x12101
+-#define IJKAVINJECT_WILL_HTTP_SEEK      0x12102
+-#define IJKAVINJECT_DID_HTTP_SEEK       0x12103
+-
+-// AVAppIOTraffic
+-#define IJKAVINJECT_ON_IO_TRAFFIC       0x12204
+-
+-typedef int (*IjkAVInjectCallback)(void *opaque, int message, void *data, size_t data_size);
+-
+-IjkAVInjectCallback ijkav_register_inject_callback(IjkAVInjectCallback callback);
+-IjkAVInjectCallback ijkav_get_inject_callback();
+-
+-#endif
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijkinject.c b/ijkmedia/ijkplayer/ijkavformat/ijkinject.c
+deleted file mode 100644
+index f68fee6..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/ijkinject.c
++++ /dev/null
+@@ -1,112 +0,0 @@
+-/*
+- * Copyright (c) 2015 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#include <assert.h>
+-#include "libavformat/avformat.h"
+-#include "libavformat/url.h"
+-#include "libavutil/avstring.h"
+-#include "libavutil/log.h"
+-#include "libavutil/opt.h"
+-
+-#include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
+-
+-typedef struct Context {
+-    AVClass        *class;
+-    URLContext     *inner;
+-    char           *inner_url;
+-
+-    /* options */
+-    int64_t         opaque;
+-    int             segment_index;
+-} Context;
+-
+-static int ijkinject_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context *c = h->priv_data;
+-    int ret = -1;
+-
+-    av_strstart(arg, "ijkinject:", &arg);
+-
+-    c->inner_url = av_strdup(arg);
+-
+-    av_dict_set_int(options, "ijkinject-opaque",        c->opaque, 0);
+-    av_dict_set_int(options, "ijkinject-segment-index", c->segment_index, 0);
+-    ret = ffurl_open_whitelist(&c->inner, arg, flags, &h->interrupt_callback, options, h->protocol_whitelist);
+-    if (ret)
+-        goto fail;
+-
+-    return ret;
+-fail:
+-    av_freep(&c->inner_url);
+-    return ret;
+-}
+-
+-static int ijkinject_close(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-
+-    av_freep(&c->inner_url);
+-
+-    return ffurl_close(c->inner);
+-}
+-
+-static int ijkinject_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_read(c->inner, buf, size);
+-}
+-
+-static int64_t ijkinject_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_seek(c->inner, pos, whence);
+-}
+-
+-#define OFFSET(x) offsetof(Context, x)
+-#define D AV_OPT_FLAG_DECODING_PARAM
+-
+-static const AVOption options[] = {
+-    { "ijkinject-opaque",           "private data of user, passed with custom callback",
+-        OFFSET(opaque),             IJKAV_OPTION_INT64(0, INT64_MIN, INT64_MAX) },
+-    { NULL }
+-};
+-
+-#undef D
+-#undef OFFSET
+-
+-static const AVClass ijkinject_context_class = {
+-    .class_name = "Inject",
+-    .item_name  = av_default_item_name,
+-    .option     = options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ijkff_ijkinject_protocol = {
+-    .name                = "ijkinject",
+-    .url_open2           = ijkinject_open,
+-    .url_read            = ijkinject_read,
+-    .url_seek            = ijkinject_seek,
+-    .url_close           = ijkinject_close,
+-    .priv_data_size      = sizeof(Context),
+-    .priv_data_class     = &ijkinject_context_class,
+-};
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijklivehook.c b/ijkmedia/ijkplayer/ijkavformat/ijklivehook.c
+index 562767e..1a1b39f 100644
+--- a/ijkmedia/ijkplayer/ijkavformat/ijklivehook.c
++++ b/ijkmedia/ijkplayer/ijkavformat/ijklivehook.c
+@@ -24,7 +24,8 @@
+ #include "libavutil/opt.h"
+ 
+ #include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
++
++#include "libavformat/ijkavformat.h"
+ 
+ typedef struct {
+     AVClass         *class;
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijklongurl.c b/ijkmedia/ijkplayer/ijkavformat/ijklongurl.c
+deleted file mode 100644
+index 6e965f7..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/ijklongurl.c
++++ /dev/null
+@@ -1,97 +0,0 @@
+-/*
+- * Copyright (c) 2015 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#include <assert.h>
+-#include "libavformat/avformat.h"
+-#include "libavformat/url.h"
+-#include "libavutil/avstring.h"
+-#include "libavutil/log.h"
+-#include "libavutil/opt.h"
+-
+-#include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
+-
+-typedef struct Context {
+-    AVClass        *class;
+-    URLContext     *inner;
+-
+-    /* options */
+-    char           *url;
+-} Context;
+-
+-static int ijklongurl_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context *c = h->priv_data;
+-
+-    if (!c->url || !*c->url)
+-        return AVERROR_EXTERNAL;
+-
+-    return ffurl_open_whitelist(&c->inner, c->url, flags, &h->interrupt_callback, options, h->protocol_whitelist);
+-}
+-
+-static int ijklongurl_close(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_close(c->inner);
+-}
+-
+-static int ijklongurl_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_read(c->inner, buf, size);
+-}
+-
+-static int64_t ijklongurl_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_seek(c->inner, pos, whence);
+-}
+-
+-#define OFFSET(x) offsetof(Context, x)
+-#define D AV_OPT_FLAG_DECODING_PARAM
+-
+-static const AVOption options[] = {
+-    { "ijklongurl-url",         "real url to access",
+-        OFFSET(url),            IJKAV_OPTION_STR(NULL) },
+-    { NULL }
+-};
+-
+-#undef D
+-#undef OFFSET
+-
+-static const AVClass ijklongurl_context_class = {
+-    .class_name = "LongUrl",
+-    .item_name  = av_default_item_name,
+-    .option     = options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ijkff_ijklongurl_protocol = {
+-    .name                = "ijklongurl",
+-    .url_open2           = ijklongurl_open,
+-    .url_read            = ijklongurl_read,
+-    .url_seek            = ijklongurl_seek,
+-    .url_close           = ijklongurl_close,
+-    .priv_data_size      = sizeof(Context),
+-    .priv_data_class     = &ijklongurl_context_class,
+-};
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijksegment.c b/ijkmedia/ijkplayer/ijkavformat/ijksegment.c
+deleted file mode 100644
+index 27b62a0..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/ijksegment.c
++++ /dev/null
+@@ -1,154 +0,0 @@
+-/*
+- * Copyright (c) 2015 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#include <assert.h>
+-#include "libavformat/avformat.h"
+-#include "libavformat/url.h"
+-#include "libavutil/avstring.h"
+-#include "libavutil/log.h"
+-#include "libavutil/opt.h"
+-
+-#include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
+-
+-typedef struct Context {
+-    AVClass        *class;
+-    URLContext     *inner;
+-
+-    /* options */
+-    int64_t         opaque;
+-    int             segment_index;
+-    char           *http_hook;
+-} Context;
+-
+-static void *ijksegment_get_opaque(URLContext *h) {
+-    Context *c = h->priv_data;
+-#ifdef __GNUC__
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+-#endif
+-    return (void *)c->opaque;
+-#ifdef __GNUC__
+-#pragma GCC diagnostic pop
+-#endif
+-}
+-
+-static int ijksegment_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context *c = h->priv_data;
+-    IJKAVInject_OnUrlOpenData inject_data = {0};
+-    IjkAVInjectCallback inject_callback = ijkav_get_inject_callback();
+-    int ret = -1;
+-    void *opaque = ijksegment_get_opaque(h);
+-    assert(opaque);
+-
+-    if (!c->opaque) {
+-        av_log(h, AV_LOG_ERROR, "null opaque\n");
+-        return AVERROR_EXTERNAL;
+-    }
+-
+-    if (!inject_callback) {
+-        av_log(h, AV_LOG_ERROR, "null inject_callback\n");
+-        return AVERROR_EXTERNAL;
+-    }
+-
+-    av_strstart(arg, "ijksegment:", &arg);
+-    if (!arg || !*arg)
+-        return AVERROR_EXTERNAL;
+-
+-    inject_data.size = sizeof(inject_data);
+-    inject_data.segment_index = (int)strtol(arg, NULL, 0);
+-    strlcpy(inject_data.url,    arg,    sizeof(inject_data.url));
+-
+-    if (opaque && inject_callback &&
+-        inject_data.segment_index < 0) {
+-        ret = AVERROR_EXTERNAL;
+-        goto fail;
+-    }
+-
+-    ret = inject_callback(opaque, IJKAVINJECT_CONCAT_RESOLVE_SEGMENT, &inject_data, sizeof(inject_data));
+-    if (ret || !inject_data.url[0]) {
+-        ret = AVERROR_EXIT;
+-        goto fail;
+-    }
+-
+-    av_dict_set_int(options, "ijkinject-opaque",        c->opaque, 0);
+-    av_dict_set_int(options, "ijkinject-segment-index", c->segment_index, 0);
+-
+-    ret = ffurl_open_whitelist(&c->inner, inject_data.url, flags, &h->interrupt_callback, options, h->protocol_whitelist);
+-    if (ret)
+-        goto fail;
+-
+-    return 0;
+-fail:
+-    return ret;
+-}
+-
+-static int ijksegment_close(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_close(c->inner);
+-}
+-
+-static int ijksegment_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_read(c->inner, buf, size);
+-}
+-
+-static int64_t ijksegment_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_seek(c->inner, pos, whence);
+-}
+-
+-#define OFFSET(x) offsetof(Context, x)
+-#define D AV_OPT_FLAG_DECODING_PARAM
+-
+-static const AVOption options[] = {
+-    { "ijkinject-opaque",           "private data of user, passed with custom callback",
+-        OFFSET(opaque),             IJKAV_OPTION_INT64(0, INT64_MIN, INT64_MAX) },
+-    { "ijkinject-segment-index",    "segment index of current url",
+-        OFFSET(segment_index),      IJKAV_OPTION_INT(0, 0, INT_MAX) },
+-    { NULL }
+-};
+-
+-#undef D
+-#undef OFFSET
+-
+-static const AVClass ijksegment_context_class = {
+-    .class_name = "Inject",
+-    .item_name  = av_default_item_name,
+-    .option     = options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ijkff_ijksegment_protocol = {
+-    .name                = "ijksegment",
+-    .url_open2           = ijksegment_open,
+-    .url_read            = ijksegment_read,
+-    .url_seek            = ijksegment_seek,
+-    .url_close           = ijksegment_close,
+-    .priv_data_size      = sizeof(Context),
+-    .priv_data_class     = &ijksegment_context_class,
+-};
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijkurlhook.c b/ijkmedia/ijkplayer/ijkavformat/ijkurlhook.c
+deleted file mode 100644
+index ea52215..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/ijkurlhook.c
++++ /dev/null
+@@ -1,468 +0,0 @@
+-/*
+- * Copyright (c) 2015 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#include <assert.h>
+-#include "libavformat/avformat.h"
+-#include "libavformat/url.h"
+-#include "libavutil/avstring.h"
+-#include "libavutil/log.h"
+-#include "libavutil/opt.h"
+-
+-#include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
+-
+-typedef struct Context {
+-    AVClass        *class;
+-    URLContext     *inner;
+-
+-    int64_t         logical_pos;
+-    int64_t         logical_size;
+-    int             io_error;
+-
+-    IJKAVInject_OnUrlOpenData inject_data;
+-    const char     *scheme;
+-    const char     *inner_scheme;
+-    int             open_callback_id;
+-
+-    /* options */
+-    int             inner_flags;
+-    AVDictionary   *inner_options;
+-    int64_t         opaque;
+-    int             segment_index;
+-    int64_t         test_fail_point;
+-    int64_t         test_fail_point_next;
+-} Context;
+-
+-static int ijkurlhook_call_inject(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-    IjkAVInjectCallback inject_callback = ijkav_get_inject_callback();
+-    void *opaque = (void *) (intptr_t) c->opaque;
+-    int ret = 0;
+-
+-    if (ff_check_interrupt(&h->interrupt_callback)) {
+-        ret = AVERROR_EXIT;
+-        goto fail;
+-    }
+-
+-    if (opaque && inject_callback) {
+-        IJKAVInject_OnUrlOpenData inject_data_backup = c->inject_data;
+-
+-        c->inject_data.is_handled = 0;
+-        c->inject_data.is_url_changed = 0;
+-        ret = inject_callback(opaque, c->open_callback_id, &c->inject_data, sizeof(c->inject_data));
+-        if (ret || !c->inject_data.url[0]) {
+-            ret = AVERROR_EXIT;
+-            goto fail;
+-        }
+-
+-        if (!c->inject_data.is_url_changed && strcmp(inject_data_backup.url, c->inject_data.url)) {
+-            // force a url compare
+-            c->inject_data.is_url_changed = 1;
+-        }
+-
+-        av_log(h, AV_LOG_INFO, "%s %s (%s)\n", h->prot->name, c->inject_data.url, c->inject_data.is_url_changed ? "changed" : "remain");
+-    }
+-
+-    if (ff_check_interrupt(&h->interrupt_callback)) {
+-        ret = AVERROR_EXIT;
+-        goto fail;
+-    }
+-
+-fail:
+-    return ret;
+-}
+-
+-static int ijkurlhook_reconnect(URLContext *h, AVDictionary *extra)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-    URLContext *new_url = NULL;
+-    AVDictionary *inner_options = NULL;
+-
+-    c->test_fail_point_next += c->test_fail_point;
+-
+-    assert(c->inner_options);
+-    av_dict_copy(&inner_options, c->inner_options, 0);
+-    if (extra)
+-        av_dict_copy(&inner_options, extra, 0);
+-
+-    ret = ffurl_open_whitelist(&new_url, c->inject_data.url, c->inner_flags, &h->interrupt_callback, &inner_options, h->protocol_whitelist);
+-    if (ret)
+-        goto fail;
+-
+-    ffurl_closep(&c->inner);
+-
+-    c->inner        = new_url;
+-    h->is_streamed  = c->inner->is_streamed;
+-    c->logical_pos  = ffurl_seek(c->inner, 0, SEEK_CUR);
+-    if (c->inner->is_streamed)
+-        c->logical_size = -1;
+-    else
+-        c->logical_size = ffurl_seek(c->inner, 0, AVSEEK_SIZE);
+-
+-    c->io_error = 0;
+-fail:
+-    av_dict_free(&inner_options);
+-    return ret;
+-}
+-
+-static int ijkurlhook_init(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-
+-    av_strstart(arg, c->scheme, &arg);
+-
+-    c->inner_flags = flags;
+-
+-    if (options)
+-        av_dict_copy(&c->inner_options, *options, 0);
+-    av_dict_set_int(&c->inner_options, "ijkinject-opaque",        c->opaque, 0);
+-    av_dict_set_int(&c->inner_options, "ijkinject-segment-index", c->segment_index, 0);
+-
+-    c->inject_data.size = sizeof(c->inject_data);
+-    c->inject_data.segment_index = c->segment_index;
+-    c->inject_data.retry_counter = 0;
+-
+-    if (av_strstart(arg, c->inner_scheme, NULL)) {
+-        snprintf(c->inject_data.url, sizeof(c->inject_data.url), "%s", arg);
+-    } else {
+-        snprintf(c->inject_data.url, sizeof(c->inject_data.url), "%s%s", c->inner_scheme, arg);
+-    }
+-
+-    return ret;
+-}
+-
+-static int ijktcphook_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-
+-    c->scheme = "ijktcphook:";
+-    c->inner_scheme = "tcp:";
+-    c->open_callback_id = IJKAVINJECT_ON_TCP_OPEN;
+-    ret = ijkurlhook_init(h, arg, flags, options);
+-    if (ret)
+-        goto fail;
+-
+-    ret = ijkurlhook_call_inject(h);
+-    if (ret)
+-        goto fail;
+-
+-    ret = ijkurlhook_reconnect(h, NULL);
+-    if (ret)
+-        goto fail;
+-
+-fail:
+-    return ret;
+-}
+-
+-static int ijkurlhook_close(URLContext *h)
+-{
+-    Context *c = h->priv_data;
+-
+-    av_dict_free(&c->inner_options);
+-    return ffurl_closep(&c->inner);
+-}
+-
+-static int ijkurlhook_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-
+-    if (c->io_error < 0)
+-        return c->io_error;
+-
+-    if (c->test_fail_point_next > 0 && c->logical_pos >= c->test_fail_point_next) {
+-        av_log(h, AV_LOG_ERROR, "test fail point:%"PRId64"\n", c->test_fail_point_next);
+-        c->io_error = AVERROR(EIO);
+-        return AVERROR(EIO);
+-    }
+-
+-    ret = ffurl_read(c->inner, buf, size);
+-    if (ret > 0)
+-        c->logical_pos += ret;
+-    else
+-        c->io_error = ret;
+-
+-    return ret;
+-}
+-
+-static int ijkurlhook_write(URLContext *h, const unsigned char *buf, int size)
+-{
+-    Context *c = h->priv_data;
+-
+-    return ffurl_write(c->inner, buf, size);
+-}
+-
+-static int64_t ijkurlhook_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    Context *c = h->priv_data;
+-    int64_t seek_ret = 0;
+-
+-    seek_ret = ffurl_seek(c->inner, pos, whence);
+-    if (seek_ret < 0) {
+-        c->io_error = (int)seek_ret;
+-        return seek_ret;
+-    }
+-
+-    c->logical_pos = seek_ret;
+-    if (c->test_fail_point)
+-        c->test_fail_point_next = c->logical_pos + c->test_fail_point;
+-
+-    c->io_error = 0;
+-    return seek_ret;
+-}
+-
+-static int ijkhttphook_reconnect_at(URLContext *h, int64_t offset)
+-{
+-    AVDictionary *extra_opts = NULL;
+-
+-    av_dict_set_int(&extra_opts, "offset", offset, 0);
+-    int ret = ijkurlhook_reconnect(h, extra_opts);
+-    av_dict_free(&extra_opts);
+-    return ret;
+-}
+-
+-static int ijkhttphook_open(URLContext *h, const char *arg, int flags, AVDictionary **options)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-
+-    c->scheme = "ijkhttphook:";
+-    c->inner_scheme = "http:";
+-    c->open_callback_id = IJKAVINJECT_ON_HTTP_OPEN;
+-
+-    ret = ijkurlhook_init(h, arg, flags, options);
+-    if (ret)
+-        goto fail;
+-
+-    ret = ijkurlhook_call_inject(h);
+-    if (ret)
+-        goto fail;
+-
+-    ret = ijkurlhook_reconnect(h, NULL);
+-    while (ret) {
+-        int inject_ret = 0;
+-
+-        switch (ret) {
+-            case AVERROR_EXIT:
+-                goto fail;
+-        }
+-
+-        c->inject_data.retry_counter++;
+-        inject_ret = ijkurlhook_call_inject(h);
+-        if (inject_ret) {
+-            ret = AVERROR_EXIT;
+-            goto fail;
+-        }
+-
+-        if (!c->inject_data.is_handled)
+-            goto fail;
+-
+-        av_log(h, AV_LOG_INFO, "%s: will reconnect at start\n", __func__);
+-        ret = ijkurlhook_reconnect(h, NULL);
+-        av_log(h, AV_LOG_INFO, "%s: did reconnect at start: %d\n", __func__, ret);
+-        if (ret)
+-            c->inject_data.retry_counter++;
+-    }
+-
+-fail:
+-    return ret;
+-}
+-
+-static int ijkhttphook_read(URLContext *h, unsigned char *buf, int size)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-
+-    c->inject_data.retry_counter = 0;
+-
+-    ret = ijkurlhook_read(h, buf, size);
+-    while (ret < 0 && !h->is_streamed && c->logical_pos < c->logical_size) {
+-        switch (ret) {
+-            case AVERROR_EXIT:
+-                goto fail;
+-        }
+-
+-        c->inject_data.retry_counter++;
+-        ret = ijkurlhook_call_inject(h);
+-        if (ret)
+-            goto fail;
+-
+-        if (!c->inject_data.is_handled)
+-            goto fail;
+-
+-        av_log(h, AV_LOG_INFO, "%s: will reconnect(%d) at %"PRId64"\n", __func__, c->inject_data.retry_counter, c->logical_pos);
+-        ret = ijkhttphook_reconnect_at(h, c->logical_pos);
+-        av_log(h, AV_LOG_INFO, "%s: did reconnect(%d) at %"PRId64": %d\n", __func__, c->inject_data.retry_counter, c->logical_pos, ret);
+-        if (ret < 0)
+-            continue;
+-
+-        ret = ijkurlhook_read(h, buf, size);
+-    }
+-
+-fail:
+-    if (ret <= 0) {
+-        c->io_error = ret;
+-    }
+-    return ret;
+-}
+-
+-static int64_t ijkhttphook_reseek_at(URLContext *h, int64_t pos, int whence, int force_reconnect)
+-{
+-    Context *c = h->priv_data;
+-    int ret = 0;
+-
+-    if (!force_reconnect)
+-        return ijkurlhook_seek(h, pos, whence);
+-
+-    if (whence == SEEK_CUR)
+-        pos += c->logical_pos;
+-    else if (whence == SEEK_END)
+-        pos += c->logical_size;
+-    else if (whence != SEEK_SET)
+-        return AVERROR(EINVAL);
+-    if (pos < 0)
+-        return AVERROR(EINVAL);
+-
+-    ret = ijkhttphook_reconnect_at(h, pos);
+-    if (ret) {
+-        c->io_error = ret;
+-        return ret;
+-    }
+-
+-    c->io_error = 0;
+-    return c->logical_pos;
+-}
+-
+-static int64_t ijkhttphook_seek(URLContext *h, int64_t pos, int whence)
+-{
+-    Context *c = h->priv_data;
+-    int     ret      = 0;
+-    int64_t seek_ret = -1;
+-
+-    if (whence == AVSEEK_SIZE)
+-        return c->logical_size;
+-    else if ((whence == SEEK_CUR && pos == 0) ||
+-             (whence == SEEK_SET && pos == c->logical_pos))
+-        return c->logical_pos;
+-    else if ((c->logical_size < 0 && whence == SEEK_END) || h->is_streamed)
+-        return AVERROR(ENOSYS);
+-
+-    c->inject_data.retry_counter = 0;
+-    ret = ijkurlhook_call_inject(h);
+-    if (ret) {
+-        ret = AVERROR_EXIT;
+-        goto fail;
+-    }
+-
+-    seek_ret = ijkhttphook_reseek_at(h, pos, whence, c->inject_data.is_url_changed);
+-    while (seek_ret < 0) {
+-        switch (seek_ret) {
+-            case AVERROR_EXIT:
+-            case AVERROR_EOF:
+-                goto fail;
+-        }
+-
+-        c->inject_data.retry_counter++;
+-        ret = ijkurlhook_call_inject(h);
+-        if (ret) {
+-            ret = AVERROR_EXIT;
+-            goto fail;
+-        }
+-
+-        if (!c->inject_data.is_handled)
+-            goto fail;
+-
+-        av_log(h, AV_LOG_INFO, "%s: will reseek(%d) at pos=%"PRId64", whence=%d\n", __func__, c->inject_data.retry_counter, pos, whence);
+-        seek_ret = ijkhttphook_reseek_at(h, pos, whence, c->inject_data.is_url_changed);
+-        av_log(h, AV_LOG_INFO, "%s: did reseek(%d) at pos=%"PRId64", whence=%d: %"PRId64"\n", __func__, c->inject_data.retry_counter, pos, whence, seek_ret);
+-    }
+-
+-    if (c->test_fail_point)
+-        c->test_fail_point_next = c->logical_pos + c->test_fail_point;
+-    c->io_error = 0;
+-    return c->logical_pos;
+-fail:
+-    return ret;
+-}
+-
+-#define OFFSET(x) offsetof(Context, x)
+-#define D AV_OPT_FLAG_DECODING_PARAM
+-
+-static const AVOption ijktcphook_options[] = {
+-    { "ijkinject-opaque",               "private data of user, passed with custom callback",
+-        OFFSET(opaque),                 IJKAV_OPTION_INT64(0, INT64_MIN, INT64_MAX) },
+-    { "ijkinject-segment-index",        "segment index of current url",
+-        OFFSET(segment_index),          IJKAV_OPTION_INT(0, 0, INT_MAX) },
+-    { "ijktcphook-test-fail-point",     "test fail point, in bytes",
+-        OFFSET(test_fail_point),        IJKAV_OPTION_INT(0, 0, INT_MAX) },
+-    { NULL }
+-};
+-
+-static const AVOption ijkhttphook_options[] = {
+-    { "ijkinject-opaque",               "private data of user, passed with custom callback",
+-        OFFSET(opaque),                 IJKAV_OPTION_INT64(0, INT64_MIN, INT64_MAX) },
+-    { "ijkinject-segment-index",        "segment index of current url",
+-        OFFSET(segment_index),          IJKAV_OPTION_INT(0, 0, INT_MAX) },
+-    { "ijkhttphook-test-fail-point",    "test fail point, in bytes",
+-        OFFSET(test_fail_point),        IJKAV_OPTION_INT(0, 0, INT_MAX) },
+-    { NULL }
+-};
+-
+-#undef D
+-#undef OFFSET
+-
+-static const AVClass ijktcphook_context_class = {
+-    .class_name = "TcpHook",
+-    .item_name  = av_default_item_name,
+-    .option     = ijktcphook_options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ijkff_ijktcphook_protocol = {
+-    .name                = "ijktcphook",
+-    .url_open2           = ijktcphook_open,
+-    .url_read            = ijkurlhook_read,
+-    .url_write           = ijkurlhook_write,
+-    .url_close           = ijkurlhook_close,
+-    .priv_data_size      = sizeof(Context),
+-    .priv_data_class     = &ijktcphook_context_class,
+-};
+-
+-static const AVClass ijkhttphook_context_class = {
+-    .class_name = "HttpHook",
+-    .item_name  = av_default_item_name,
+-    .option     = ijkhttphook_options,
+-    .version    = LIBAVUTIL_VERSION_INT,
+-};
+-
+-URLProtocol ijkff_ijkhttphook_protocol = {
+-    .name                = "ijkhttphook",
+-    .url_open2           = ijkhttphook_open,
+-    .url_read            = ijkhttphook_read,
+-    .url_write           = ijkurlhook_write,
+-    .url_seek            = ijkhttphook_seek,
+-    .url_close           = ijkurlhook_close,
+-    .priv_data_size      = sizeof(Context),
+-    .priv_data_class     = &ijkhttphook_context_class,
+-};
+diff --git a/ijkmedia/ijkplayer/ijkavformat/utils.c b/ijkmedia/ijkplayer/ijkavformat/utils.c
+deleted file mode 100644
+index b7d9d99..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/utils.c
++++ /dev/null
+@@ -1,39 +0,0 @@
+-/*
+- * utils.c
+- *
+- * Copyright (c) 2003 Fabrice Bellard
+- * Copyright (c) 2013 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#include <stdlib.h>
+-#include "ijkavformat.h"
+-
+-static IjkAVInjectCallback s_av_inject_callback = NULL;
+-
+-IjkAVInjectCallback ijkav_register_inject_callback(IjkAVInjectCallback callback)
+-{
+-    IjkAVInjectCallback prev_callback = s_av_inject_callback;
+-    s_av_inject_callback = callback;
+-    return prev_callback;
+-}
+-
+-IjkAVInjectCallback ijkav_get_inject_callback()
+-{
+-    return s_av_inject_callback;
+-}
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj b/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj
+index 544983a..891a1b6 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj
+@@ -75,14 +75,7 @@
+ 		E69808A01C7EB2040048A46C /* IJKNotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E698089E1C7EB2040048A46C /* IJKNotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+ 		E69808A11C7EB2040048A46C /* IJKNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E698089F1C7EB2040048A46C /* IJKNotificationManager.m */; };
+ 		E69BE5511B93FED300AFBA3F /* allformats.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE54A1B93FED300AFBA3F /* allformats.c */; };
+-		E69BE5531B93FED300AFBA3F /* async.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE54B1B93FED300AFBA3F /* async.c */; };
+-		E69BE5561B93FED300AFBA3F /* ijkinject.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE54D1B93FED300AFBA3F /* ijkinject.c */; };
+ 		E69BE5571B93FED300AFBA3F /* opt.h in Headers */ = {isa = PBXBuildFile; fileRef = E69BE54F1B93FED300AFBA3F /* opt.h */; };
+-		E69BE5591B9405BD00AFBA3F /* ijkavformat.h in Headers */ = {isa = PBXBuildFile; fileRef = E69BE5581B9405BD00AFBA3F /* ijkavformat.h */; };
+-		E69BE55F1B940D1A00AFBA3F /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE55D1B940D1A00AFBA3F /* utils.c */; };
+-		E69BE5641B943C0800AFBA3F /* ijklongurl.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE5621B943A9A00AFBA3F /* ijklongurl.c */; };
+-		E69BE5681B94468D00AFBA3F /* ijkurlhook.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE5651B94468D00AFBA3F /* ijkurlhook.c */; };
+-		E69BE56F1B945B0000AFBA3F /* ijksegment.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE56D1B945B0000AFBA3F /* ijksegment.c */; };
+ 		E69BE5721B946FF600AFBA3F /* ijklivehook.c in Sources */ = {isa = PBXBuildFile; fileRef = E69BE5701B946FF600AFBA3F /* ijklivehook.c */; };
+ 		E6C2E7BE1C92BD3600E59229 /* IJKKVOController.h in Headers */ = {isa = PBXBuildFile; fileRef = E65DC3B719D93D5F004F8A08 /* IJKKVOController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+ 		E6C459841C7030AA004831EC /* ijksdl_gles2.h in Headers */ = {isa = PBXBuildFile; fileRef = E6C459831C7030AA004831EC /* ijksdl_gles2.h */; };
+@@ -225,14 +218,7 @@
+ 		E698089E1C7EB2040048A46C /* IJKNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJKNotificationManager.h; path = IJKMediaPlayer/IJKNotificationManager.h; sourceTree = "<group>"; };
+ 		E698089F1C7EB2040048A46C /* IJKNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IJKNotificationManager.m; path = IJKMediaPlayer/IJKNotificationManager.m; sourceTree = "<group>"; };
+ 		E69BE54A1B93FED300AFBA3F /* allformats.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = allformats.c; sourceTree = "<group>"; };
+-		E69BE54B1B93FED300AFBA3F /* async.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = async.c; sourceTree = "<group>"; };
+-		E69BE54D1B93FED300AFBA3F /* ijkinject.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijkinject.c; sourceTree = "<group>"; };
+ 		E69BE54F1B93FED300AFBA3F /* opt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opt.h; sourceTree = "<group>"; };
+-		E69BE5581B9405BD00AFBA3F /* ijkavformat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijkavformat.h; sourceTree = "<group>"; };
+-		E69BE55D1B940D1A00AFBA3F /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
+-		E69BE5621B943A9A00AFBA3F /* ijklongurl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijklongurl.c; sourceTree = "<group>"; };
+-		E69BE5651B94468D00AFBA3F /* ijkurlhook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijkurlhook.c; sourceTree = "<group>"; };
+-		E69BE56D1B945B0000AFBA3F /* ijksegment.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijksegment.c; sourceTree = "<group>"; };
+ 		E69BE5701B946FF600AFBA3F /* ijklivehook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijklivehook.c; sourceTree = "<group>"; };
+ 		E6C2FD391B300A390081D321 /* ff_ffplay_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ff_ffplay_debug.h; sourceTree = "<group>"; };
+ 		E6C459831C7030AA004831EC /* ijksdl_gles2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijksdl_gles2.h; sourceTree = "<group>"; };
+@@ -603,15 +589,8 @@
+ 			isa = PBXGroup;
+ 			children = (
+ 				E69BE54A1B93FED300AFBA3F /* allformats.c */,
+-				E69BE54B1B93FED300AFBA3F /* async.c */,
+-				E69BE5581B9405BD00AFBA3F /* ijkavformat.h */,
+-				E69BE54D1B93FED300AFBA3F /* ijkinject.c */,
+ 				E69BE5701B946FF600AFBA3F /* ijklivehook.c */,
+-				E69BE5621B943A9A00AFBA3F /* ijklongurl.c */,
+-				E69BE56D1B945B0000AFBA3F /* ijksegment.c */,
+-				E69BE5651B94468D00AFBA3F /* ijkurlhook.c */,
+ 				E69007F11B96E2A600EB346D /* url.h */,
+-				E69BE55D1B940D1A00AFBA3F /* utils.c */,
+ 			);
+ 			path = ijkavformat;
+ 			sourceTree = "<group>";
+@@ -736,7 +715,6 @@
+ 				E654EAE61B6B295200B0F2D0 /* IJKMediaModule.h in Headers */,
+ 				E69BE5571B93FED300AFBA3F /* opt.h in Headers */,
+ 				E654EAE71B6B295200B0F2D0 /* IJKMediaPlayback.h in Headers */,
+-				E69BE5591B9405BD00AFBA3F /* ijkavformat.h in Headers */,
+ 				E654EAED1B6B29C100B0F2D0 /* IJKMediaPlayer.h in Headers */,
+ 				E6C459961C7030B6004831EC /* internal.h in Headers */,
+ 				E654EAE91B6B295200B0F2D0 /* IJKMPMoviePlayerController.h in Headers */,
+@@ -841,12 +819,9 @@
+ 			isa = PBXSourcesBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				E69BE5641B943C0800AFBA3F /* ijklongurl.c in Sources */,
+-				E69BE56F1B945B0000AFBA3F /* ijksegment.c in Sources */,
+ 				E654EAA71B6B283700B0F2D0 /* IJKKVOController.m in Sources */,
+ 				E654EAC71B6B287E00B0F2D0 /* ijksdl_vout.c in Sources */,
+ 				E6C459951C7030B6004831EC /* yuv444p10le.fsh.c in Sources */,
+-				E69BE55F1B940D1A00AFBA3F /* utils.c in Sources */,
+ 				E69BE5511B93FED300AFBA3F /* allformats.c in Sources */,
+ 				E654EABB1B6B286B00B0F2D0 /* ffpipenode_ffplay_vdec.c in Sources */,
+ 				E6C459981C7030B6004831EC /* renderer_yuv420p.c in Sources */,
+@@ -855,7 +830,6 @@
+ 				E654EAB91B6B286700B0F2D0 /* ijkplayer_ios.m in Sources */,
+ 				E654EAB51B6B286400B0F2D0 /* ffpipeline_ios.c in Sources */,
+ 				E654EABD1B6B287000B0F2D0 /* ijksdl_vout_dummy.c in Sources */,
+-				E69BE5681B94468D00AFBA3F /* ijkurlhook.c in Sources */,
+ 				E6C459CC1C70967F004831EC /* renderer_yuv420sp.c in Sources */,
+ 				E6C459941C7030B6004831EC /* yuv420p.fsh.c in Sources */,
+ 				E654EAC21B6B287E00B0F2D0 /* ijksdl_error.c in Sources */,
+@@ -884,7 +858,6 @@
+ 				E654EAB21B6B285900B0F2D0 /* ff_ffplay.c in Sources */,
+ 				E654EAC01B6B287E00B0F2D0 /* ijksdl_aout.c in Sources */,
+ 				E6C459921C7030B6004831EC /* color.c in Sources */,
+-				E69BE5561B93FED300AFBA3F /* ijkinject.c in Sources */,
+ 				E654EAC11B6B287E00B0F2D0 /* ijksdl_audio.c in Sources */,
+ 				E654EAC91B6B288A00B0F2D0 /* ijksdl_thread_ios.m in Sources */,
+ 				E654EAB31B6B285900B0F2D0 /* ijkmeta.c in Sources */,
+@@ -892,7 +865,6 @@
+ 				E654EAD31B6B288A00B0F2D0 /* IJKSDLGLView.m in Sources */,
+ 				E654EAC61B6B287E00B0F2D0 /* ijksdl_timer.c in Sources */,
+ 				E6C4599A1C7030B6004831EC /* shader.c in Sources */,
+-				E69BE5531B93FED300AFBA3F /* async.c in Sources */,
+ 				E6C459971C7030B6004831EC /* renderer.c in Sources */,
+ 				E654EAB41B6B285900B0F2D0 /* ijkplayer.c in Sources */,
+ 				E654EAAE1B6B284C00B0F2D0 /* IJKFFOptions.m in Sources */,
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
+index 4eb8063..0917eec 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/IJKFFMoviePlayerController.m
+@@ -32,7 +32,7 @@
+ 
+ #include "string.h"
+ #include "ijkplayer/version.h"
+-#include "ijkplayer/ijkavformat/ijkavformat.h"
++#include "libavformat/ijkavformat.h"
+ 
+ static const char *kIJKFFRequiredFFmpegVersion = "ff3.0--ijk0.5.0--dev0.4.5--rc11";
+ 
+-- 
+1.9.1
+

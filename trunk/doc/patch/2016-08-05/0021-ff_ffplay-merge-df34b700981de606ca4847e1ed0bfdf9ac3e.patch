@@ -1,0 +1,68 @@
+From e48d502b584a1dd4f77cc335c67558635d9fe206 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 18:30:19 +0800
+Subject: [PATCH 21/73] ff_ffplay: merge:
+ df34b700981de606ca4847e1ed0bfdf9ac3e9104
+
+    ffplay: remove redundant silence buffer
+
+    Signed-off-by: Lukasz Marek <lukasz.m.luki2@gmail.com>
+---
+ ijkmedia/ijkplayer/ff_ffplay.c     | 12 ++++++------
+ ijkmedia/ijkplayer/ff_ffplay_def.h |  1 -
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 2c5cd16..0a72f07 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -2039,7 +2039,7 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
+ {
+     FFPlayer *ffp = opaque;
+     VideoState *is = ffp->is;
+-    int audio_size, len1;
++    int audio_size, len1, silence = 0;
+     if (!ffp || !is) {
+         memset(stream, 0, len);
+         return;
+@@ -2057,8 +2057,8 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
+            audio_size = audio_decode_frame(ffp);
+            if (audio_size < 0) {
+                 /* if error, just output silence */
+-               is->audio_buf      = is->silence_buf;
+-               is->audio_buf_size = sizeof(is->silence_buf) / is->audio_tgt.frame_size * is->audio_tgt.frame_size;
++               silence = 1;
++               is->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / is->audio_tgt.frame_size * is->audio_tgt.frame_size;
+            } else {
+                if (is->show_mode != SHOW_MODE_VIDEO)
+                    update_sample_display(is, (int16_t *)is->audio_buf, audio_size);
+@@ -2077,11 +2077,11 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
+         len1 = is->audio_buf_size - is->audio_buf_index;
+         if (len1 > len)
+             len1 = len;
+-        if (!is->muted && is->audio_volume == SDL_MIX_MAXVOLUME)
++        if (!is->muted && !silence && is->audio_volume == SDL_MIX_MAXVOLUME)
+             memcpy(stream, (uint8_t *)is->audio_buf + is->audio_buf_index, len1);
+         else {
+-            memset(stream, is->silence_buf[0], len1);
+-            if (!is->muted)
++            memset(stream, 0, len1);
++            if (!is->muted && !silence)
+                 SDL_MixAudio(stream, (uint8_t *)is->audio_buf + is->audio_buf_index, len1, is->audio_volume);
+         }
+         len -= len1;
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_def.h b/ijkmedia/ijkplayer/ff_ffplay_def.h
+index 8384a02..a9c52dc 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_def.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_def.h
+@@ -293,7 +293,6 @@ typedef struct VideoState {
+     AVStream *audio_st;
+     PacketQueue audioq;
+     int audio_hw_buf_size;
+-    uint8_t silence_buf[SDL_AUDIO_MIN_BUFFER_SIZE];
+     uint8_t *audio_buf;
+     uint8_t *audio_buf1;
+     unsigned int audio_buf_size; /* in bytes */
+-- 
+1.9.1
+

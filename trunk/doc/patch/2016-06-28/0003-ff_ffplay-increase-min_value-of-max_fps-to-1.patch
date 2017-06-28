@@ -1,0 +1,25 @@
+From a5ff6a70473e4a4ae54df60a7b96b842bca8131d Mon Sep 17 00:00:00 2001
+From: Xinzheng Zhang <zhangxzheng@gmail.com>
+Date: Sun, 12 Jun 2016 14:46:32 +0800
+Subject: [PATCH 03/14] ff_ffplay: increase min_value of max_fps to -1
+
+---
+ ijkmedia/ijkplayer/ff_ffplay_options.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_options.h b/ijkmedia/ijkplayer/ff_ffplay_options.h
+index 42b5331..c5a467a 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_options.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_options.h
+@@ -87,7 +87,7 @@ static const AVOption ffp_context_options[] = {
+ 
+     // extended options in ff_ffplay.c
+     { "max-fps",                        "drop frames in video whose fps is greater than max-fps",
+-        OPTION_OFFSET(max_fps),         OPTION_INT(31, 0, 121) },
++        OPTION_OFFSET(max_fps),         OPTION_INT(31, -1, 121) },
+ 
+     { "overlay-format",                 "fourcc of overlay format",
+         OPTION_OFFSET(overlay_format),  OPTION_INT(SDL_FCC_RV32, INT_MIN, INT_MAX),
+-- 
+1.9.1
+

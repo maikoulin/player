@@ -1,0 +1,23 @@
+From 072cd9fecdb400c20632a3f79a00ba23094c48c0 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 20 Jun 2016 11:58:03 +0800
+Subject: [PATCH 12/14] NEWS: mention openssl upgrade
+
+---
+ NEWS.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/NEWS.md b/NEWS.md
+index 790a8cf..e1fabc9 100644
+--- a/NEWS.md
++++ b/NEWS.md
+@@ -1,5 +1,6 @@
+ tag next
+ --------------------------------
++- openssl: upgrade to 1.0.2h
+ 
+ tag k0.5.1
+ --------------------------------
+-- 
+1.9.1
+

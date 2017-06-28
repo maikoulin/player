@@ -1,0 +1,34 @@
+From 88c582d2bdf8684ee5e54596ae481e1501599d29 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 11 Jul 2016 15:58:38 +0800
+Subject: [PATCH 13/73] gles2/renderer: add \n to logs
+
+---
+ ijkmedia/ijksdl/gles2/renderer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ijkmedia/ijksdl/gles2/renderer.c b/ijkmedia/ijksdl/gles2/renderer.c
+index add92cb..7d8ea37 100644
+--- a/ijkmedia/ijksdl/gles2/renderer.c
++++ b/ijkmedia/ijksdl/gles2/renderer.c
+@@ -174,7 +174,7 @@ IJK_GLES2_Renderer *IJK_GLES2_Renderer_create(SDL_VoutOverlay *overlay)
+         case SDL_FCC_I420:      renderer = IJK_GLES2_Renderer_create_yuv420p(); break;
+         case SDL_FCC_I444P10LE: renderer = IJK_GLES2_Renderer_create_yuv444p10le(); break;
+         default:
+-            ALOGE("[GLES2] unknown format %4s(%d)", (char *)&overlay->format, overlay->format);
++            ALOGE("[GLES2] unknown format %4s(%d)\n", (char *)&overlay->format, overlay->format);
+             return NULL;
+     }
+ 
+@@ -320,7 +320,7 @@ static void IJK_GLES2_Renderer_TexCoords_reset(IJK_GLES2_Renderer *renderer)
+ 
+ static void IJK_GLES2_Renderer_TexCoords_cropRight(IJK_GLES2_Renderer *renderer, GLfloat cropRight)
+ {
+-    ALOGE("IJK_GLES2_Renderer_TexCoords_cropRight");
++    ALOGE("IJK_GLES2_Renderer_TexCoords_cropRight\n");
+     renderer->texcoords[0] = 0.0f;
+     renderer->texcoords[1] = 1.0f;
+     renderer->texcoords[2] = 1.0f - cropRight;
+-- 
+1.9.1
+

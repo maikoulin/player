@@ -1,0 +1,56 @@
+From e5b32ff58e9f9223d9a3aeceeeb6cadd2d3810aa Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Wed, 13 Jul 2016 14:34:07 +0800
+Subject: [PATCH 48/73] android/MediaCodec: reset frame_width after format
+ change
+
+---
+ .../pipeline/ffpipenode_android_mediacodec_vdec.c      | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+index cade9ab..310deb5 100644
+--- a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
++++ b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+@@ -149,6 +149,14 @@ static SDL_AMediaCodec *create_codec_l(JNIEnv *env, IJKFF_Pipenode *node)
+         }
+     }
+ 
++    if (opaque->frame_rotate_degrees == 90 || opaque->frame_rotate_degrees == 270) {
++        opaque->frame_width  = opaque->codecpar->height;
++        opaque->frame_height = opaque->codecpar->width;
++    } else {
++        opaque->frame_width  = opaque->codecpar->width;
++        opaque->frame_height = opaque->codecpar->height;
++    }
++
+     return acodec;
+ }
+ 
+@@ -311,6 +319,8 @@ static int reconfigure_codec_l(JNIEnv *env, IJKFF_Pipenode *node, jobject new_su
+     opaque->acodec_first_dequeue_output_request = true;
+     ALOGI("%s:new acodec: %p\n", __func__, opaque->acodec);
+     SDL_VoutAndroid_setAMediaCodec(opaque->weak_vout, opaque->acodec);
++
++    ret = 0;
+ fail:
+     return ret;
+ }
+@@ -992,14 +1002,6 @@ static int func_run_sync(IJKFF_Pipenode *node)
+     if (!frame)
+         goto fail;
+ 
+-    if (opaque->frame_rotate_degrees == 90 || opaque->frame_rotate_degrees == 270) {
+-        opaque->frame_width  = opaque->codecpar->height;
+-        opaque->frame_height = opaque->codecpar->width;
+-    } else {
+-        opaque->frame_width  = opaque->codecpar->width;
+-        opaque->frame_height = opaque->codecpar->height;
+-    }
+-
+     opaque->enqueue_thread = SDL_CreateThreadEx(&opaque->_enqueue_thread, enqueue_thread_func, node, "amediacodec_input_thread");
+     if (!opaque->enqueue_thread) {
+         ALOGE("%s: SDL_CreateThreadEx failed\n", __func__);
+-- 
+1.9.1
+

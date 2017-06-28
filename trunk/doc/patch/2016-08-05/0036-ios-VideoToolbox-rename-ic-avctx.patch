@@ -1,0 +1,42 @@
+From a62870e2435ff0155e77229406d985158666f183 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 8 Jul 2016 12:35:47 +0800
+Subject: [PATCH 36/73] ios/VideoToolbox: rename ic -> avctx
+
+---
+ .../ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m    | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+index bfb2843..139de5b 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+@@ -812,17 +812,17 @@ void dealloc_videotoolbox(VideoToolBoxContext* context)
+ 
+ 
+ 
+-VideoToolBoxContext* init_videotoolbox(FFPlayer* ffp, AVCodecContext* ic)
++VideoToolBoxContext* init_videotoolbox(FFPlayer* ffp, AVCodecContext* avctx)
+ {
+-    int width           = ic->width;
+-    int height          = ic->height;
+-    int level           = ic->level;
+-    int profile         = ic->profile;
++    int width           = avctx->width;
++    int height          = avctx->height;
++    int level           = avctx->level;
++    int profile         = avctx->profile;
+     int sps_level       = 0;
+     int sps_profile     = 0;
+-    int extrasize       = ic->extradata_size;
+-    int codec           = ic->codec_id;
+-    uint8_t* extradata  = ic->extradata;
++    int extrasize       = avctx->extradata_size;
++    int codec           = avctx->codec_id;
++    uint8_t* extradata  = avctx->extradata;
+ 
+     VideoToolBoxContext *context_vtb = (VideoToolBoxContext *)mallocz(sizeof(VideoToolBoxContext));
+     if (!context_vtb) {
+-- 
+1.9.1
+

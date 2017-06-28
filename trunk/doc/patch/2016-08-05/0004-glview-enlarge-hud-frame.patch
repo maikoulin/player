@@ -1,0 +1,27 @@
+From 0cb4d917bbc93bd09e9740da1bb8c1641d688a3c Mon Sep 17 00:00:00 2001
+From: Xinzheng Zhang <zhangxzheng@gmail.com>
+Date: Tue, 5 Jul 2016 17:15:17 +0800
+Subject: [PATCH 04/73] glview: enlarge hud frame
+
+---
+ ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijksdl/ios/IJKSDLGLView.m | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijksdl/ios/IJKSDLGLView.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijksdl/ios/IJKSDLGLView.m
+index c84c6da..931124f 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijksdl/ios/IJKSDLGLView.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijksdl/ios/IJKSDLGLView.m
+@@ -231,8 +231,8 @@
+     newFrame.size.width   = selfFrame.size.width * 1 / 3;
+     newFrame.origin.x     = selfFrame.size.width * 2 / 3;
+ 
+-    newFrame.size.height  = selfFrame.size.height * 6 / 8;
+-    newFrame.origin.y    += selfFrame.size.height * 1 / 8;
++    newFrame.size.height  = selfFrame.size.height * 8 / 8;
++    newFrame.origin.y    += selfFrame.size.height * 0 / 8;
+ 
+     _hudViewController.tableView.frame = newFrame;
+     [self invalidateRenderBuffer];
+-- 
+1.9.1
+

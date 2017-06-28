@@ -1,0 +1,39 @@
+From 7d6e61c85658adba269e88e42ab45bafb3a15b32 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 20 Jun 2016 11:51:07 +0800
+Subject: [PATCH 11/14] openssl: upgrade to 1.0.2h
+
+---
+ init-android-openssl.sh | 2 +-
+ init-ios-openssl.sh     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/init-android-openssl.sh b/init-android-openssl.sh
+index 3a38f6b..09162c7 100755
+--- a/init-android-openssl.sh
++++ b/init-android-openssl.sh
+@@ -18,7 +18,7 @@
+ #IJK_OPENSSL_UPSTREAM=https://github.com/openssl/openssl
+ IJK_OPENSSL_UPSTREAM=https://github.com/Bilibili/openssl.git
+ IJK_OPENSSL_FORK=https://github.com/Bilibili/openssl.git
+-IJK_OPENSSL_COMMIT=OpenSSL_1_0_2g
++IJK_OPENSSL_COMMIT=OpenSSL_1_0_2h
+ IJK_OPENSSL_LOCAL_REPO=extra/openssl
+ 
+ set -e
+diff --git a/init-ios-openssl.sh b/init-ios-openssl.sh
+index c1d0aa9..3ebe6bd 100755
+--- a/init-ios-openssl.sh
++++ b/init-ios-openssl.sh
+@@ -17,7 +17,7 @@
+ 
+ IJK_OPENSSL_UPSTREAM=https://github.com/openssl/openssl
+ IJK_OPENSSL_FORK=https://github.com/Bilibili/openssl.git
+-IJK_OPENSSL_COMMIT=OpenSSL_1_0_2g
++IJK_OPENSSL_COMMIT=OpenSSL_1_0_2h
+ IJK_OPENSSL_LOCAL_REPO=extra/openssl
+ 
+ set -e
+-- 
+1.9.1
+

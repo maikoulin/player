@@ -1,0 +1,14 @@
+UMU @ 17:54 2016/6/22
+
+对PAR DAR SAR的理解
+http://blog.csdn.net/qiuchangyong/article/details/6881610
+# 需要获得 DAR 才能按正确的宽高比播放
+
+反交错- 视频横纹处理
+http://www.cnblogs.com/iclk/p/3924761.html
+
+H.264（MPEG-4 AVC）级别（Level）、DPB 与 MaxDpbMbs 详解
+http://www.cnblogs.com/zyl910/archive/2011/12/08/h264_level.html
+
+Android MediaCodec小结 
+http://blog.csdn.net/xipiaoyouzi/article/details/37599759

@@ -1,0 +1,112 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.chinanetcenter.wsvideotes.myapplication.SurfaceViewTestActivity" >
+
+    <com.chinanetcenter.wsvideotest.SurfaceRenderView
+        android:id="@+id/surfaceView"
+        android:layout_width="384dp"
+        android:layout_height="216dp"
+        android:layout_centerVertical="true" />
+
+    <com.chinanetcenter.wsvideotest.CircleProgressBar
+        android:id="@+id/circle_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:maxValue="100"
+        app:value="70"
+        app:backgroudColor="@android:color/holo_blue_light"
+        app:progressColor="@android:color/holo_orange_dark"
+        app:textSize="30sp"
+        app:textColor="#FF0"
+        android:layout_centerInParent="true" />
+
+    <TableLayout
+        android:id="@+id/hud_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical"
+        android:background="@color/ijk_transparent_dark"
+        android:padding="8dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#88000000"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:id="@+id/relativeLayout">
+
+        <Button
+            android:id="@+id/button_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂停" />
+
+        <Button
+            android:id="@+id/button_replay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_play"
+            android:text="重播" />
+
+        <Button
+            android:id="@+id/button_screenShot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_replay"
+            android:text="截图" />
+
+        <Button
+            android:id="@+id/button_switchplayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_screenShot"
+            android:text="WsPlayer" />
+
+        <Button
+            android:id="@+id/button_switchcodec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_switchplayer"
+            android:text="AvCodec" />
+
+        <Button
+            android:id="@+id/button_videoSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_switchcodec"
+            android:text="全屏" />
+
+        <TextView
+            android:id="@+id/textView_showTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="#ffffff" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/textView_showTime"
+            android:layout_toRightOf="@id/button_videoSize" />
+    </RelativeLayout>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:src="@drawable/efg"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="false"
+        android:layout_toRightOf="@+id/surfaceView" />
+
+</RelativeLayout>

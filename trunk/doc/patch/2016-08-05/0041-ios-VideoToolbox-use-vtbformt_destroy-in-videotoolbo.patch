@@ -1,0 +1,61 @@
+From d0a9de6888914ea2e0c51abecfd43a4e0e31d96b Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 8 Jul 2016 18:04:32 +0800
+Subject: [PATCH 41/73] ios/VideoToolbox: use vtbformt_destroy in
+ videotoolbox_free
+
+---
+ .../ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m       | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+index 641ddcf..1d233a7 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+@@ -94,6 +94,9 @@ struct VideoToolBoxContext {
+     SDL_SpeedSampler            sampler;
+ };
+ 
++static void vtbformat_destroy(VTBFormatDesc *fmt_desc);
++static int  vtbformat_init(VTBFormatDesc *fmt_desc, AVCodecContext *avctx);
++
+ static const char *vtb_get_error_string(OSStatus status) {
+     switch (status) {
+         case kVTInvalidSessionErr:                      return "kVTInvalidSessionErr";
+@@ -857,13 +860,11 @@ void videotoolbox_free(VideoToolBoxContext* context)
+     }
+     if (context) {
+         ResetPktBuffer(context);
+-        if (context->fmt_desc.fmt_desc) {
+-            CFRelease(context->fmt_desc.fmt_desc);
+-            context->fmt_desc.fmt_desc = NULL;
+-        }
+         SDL_DestroyCondP(&context->sample_info_cond);
+         SDL_DestroyMutexP(&context->sample_info_mutex);
+     }
++
++    vtbformat_destroy(&context->fmt_desc);
+ }
+ 
+ int videotoolbox_decode_frame(VideoToolBoxContext* context)
+@@ -928,7 +929,7 @@ int videotoolbox_decode_frame(VideoToolBoxContext* context)
+     return got_frame;
+ }
+ 
+-void vtbformat_destroy(VTBFormatDesc *fmt_desc)
++static void vtbformat_destroy(VTBFormatDesc *fmt_desc)
+ {
+     if (!fmt_desc || !fmt_desc->fmt_desc)
+         return;
+@@ -937,7 +938,7 @@ void vtbformat_destroy(VTBFormatDesc *fmt_desc)
+     fmt_desc->fmt_desc = NULL;
+ }
+ 
+-int vtbformat_init(VTBFormatDesc *fmt_desc, AVCodecContext *avctx)
++static int vtbformat_init(VTBFormatDesc *fmt_desc, AVCodecContext *avctx)
+ {
+     int width           = avctx->width;
+     int height          = avctx->height;
+-- 
+1.9.1
+

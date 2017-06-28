@@ -1,0 +1,30 @@
+From c26a05d9eea57e98028e09fed94bc417e2870f39 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 18:25:18 +0800
+Subject: [PATCH 20/73] ff_ffplay: merge:
+ 7916f04b89d4e970f17a14776b71b8c61c2b117d
+
+    ffplay: Remove "&& 0" from already disabled debug code
+
+    Reviewed-by: Marton Balint <cus@passwd.hu>
+    Signed-off-by: Michael Niedermayer <michael@niedermayer.cc>
+---
+ ijkmedia/ijkplayer/ff_ffplay.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 37d382c..2c5cd16 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -1220,7 +1220,7 @@ static int queue_picture(FFPlayer *ffp, AVFrame *src_frame, double pts, double d
+     VideoState *is = ffp->is;
+     Frame *vp;
+ 
+-#if defined(DEBUG_SYNC) && 0
++#if defined(DEBUG_SYNC)
+     printf("frame_type=%c pts=%0.3f\n",
+            av_get_picture_type_char(src_frame->pict_type), pts);
+ #endif
+-- 
+1.9.1
+

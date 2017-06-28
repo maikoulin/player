@@ -1,0 +1,26 @@
+From baef78f5c20a63867b10121d7b9913e46b1b3305 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 8 Jul 2016 15:22:31 +0800
+Subject: [PATCH 15/73] ios/VideoToolbox: call av_packet_split_side_data before
+ pass AVPacket to VideoToolbox
+
+---
+ .../ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m  | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
+index b88d58b..9b2ba5a 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
+@@ -73,6 +73,8 @@ int decoder_decode_frame_videotoolbox(VideoToolBoxContext* context) {
+                 }
+             } while (ffp_is_flush_packet(&pkt) || d->queue->serial != d->pkt_serial);
+ 
++            av_packet_split_side_data(&pkt);
++
+             av_packet_unref(&d->pkt);
+             d->pkt_temp = d->pkt = pkt;
+             d->packet_pending = 1;
+-- 
+1.9.1
+

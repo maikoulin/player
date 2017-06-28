@@ -1,0 +1,79 @@
+From 7978355cb76bf64ce9d2fd4acd1cd19afc04e839 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Thu, 14 Jul 2016 14:06:19 +0800
+Subject: [PATCH 50/73] android/demo: add preference: handle resolution change
+
+---
+ .../java/tv/danmaku/ijk/media/example/application/Settings.java     | 5 +++++
+ .../tv/danmaku/ijk/media/example/widget/media/IjkVideoView.java     | 5 +++++
+ .../ijkplayer-example/src/main/res/values/strings_pref.xml          | 4 ++++
+ android/ijkplayer/ijkplayer-example/src/main/res/xml/settings.xml   | 6 ++++++
+ 4 files changed, 20 insertions(+)
+
+diff --git a/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/application/Settings.java b/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/application/Settings.java
+index 1f6c260..5e80ba6 100644
+--- a/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/application/Settings.java
++++ b/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/application/Settings.java
+@@ -61,6 +61,11 @@ public class Settings {
+         return mSharedPreferences.getBoolean(key, false);
+     }
+ 
++    public boolean getMediaCodecHandleResolutionChange() {
++        String key = mAppContext.getString(R.string.pref_key_media_codec_handle_resolution_change);
++        return mSharedPreferences.getBoolean(key, false);
++    }
++
+     public boolean getUsingOpenSLES() {
+         String key = mAppContext.getString(R.string.pref_key_using_opensl_es);
+         return mSharedPreferences.getBoolean(key, false);
+diff --git a/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/widget/media/IjkVideoView.java b/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/widget/media/IjkVideoView.java
+index dbc2558..d255c13 100644
+--- a/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/widget/media/IjkVideoView.java
++++ b/android/ijkplayer/ijkplayer-example/src/main/java/tv/danmaku/ijk/media/example/widget/media/IjkVideoView.java
+@@ -990,6 +990,11 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
+                         } else {
+                             ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0);
+                         }
++                        if (mSettings.getMediaCodecHandleResolutionChange()) {
++                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1);
++                        } else {
++                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 0);
++                        }
+                     } else {
+                         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
+                     }
+diff --git a/android/ijkplayer/ijkplayer-example/src/main/res/values/strings_pref.xml b/android/ijkplayer/ijkplayer-example/src/main/res/values/strings_pref.xml
+index 27e0144..4b7cfac 100644
+--- a/android/ijkplayer/ijkplayer-example/src/main/res/values/strings_pref.xml
++++ b/android/ijkplayer/ijkplayer-example/src/main/res/values/strings_pref.xml
+@@ -43,6 +43,10 @@
+     <string name="pref_title_using_media_codec_auto_rotate">Using MediaCodec auto rotate</string>
+     <string name="pref_summary_using_media_codec_auto_rotate"></string>
+ 
++    <string name="pref_key_media_codec_handle_resolution_change">pref.media_codec_handle_resolution_change</string>
++    <string name="pref_title_media_codec_handle_resolution_change">MediaCodec handle resolution change</string>
++    <string name="pref_summary_media_codec_handle_resolution_change"></string>
++
+     <string name="pref_key_pixel_format">pref.pixel_format</string>
+     <string name="pref_title_pixel_format">Pixel Format</string>
+     <string-array name="pref_entries_pixel_format">
+diff --git a/android/ijkplayer/ijkplayer-example/src/main/res/xml/settings.xml b/android/ijkplayer/ijkplayer-example/src/main/res/xml/settings.xml
+index 99a6a87..a606829 100644
+--- a/android/ijkplayer/ijkplayer-example/src/main/res/xml/settings.xml
++++ b/android/ijkplayer/ijkplayer-example/src/main/res/xml/settings.xml
+@@ -30,6 +30,12 @@
+             android:persistent="true"
+             android:summary="@string/pref_summary_using_media_codec_auto_rotate"
+             android:title="@string/pref_title_using_media_codec_auto_rotate" />
++        <CheckBoxPreference
++            android:defaultValue="false"
++            android:key="@string/pref_key_media_codec_handle_resolution_change"
++            android:persistent="true"
++            android:summary="@string/pref_summary_media_codec_handle_resolution_change"
++            android:title="@string/pref_title_media_codec_handle_resolution_change" />
+         <tv.danmaku.ijk.media.example.widget.preference.IjkListPreference
+             android:defaultValue=""
+             android:entries="@array/pref_entries_pixel_format"
+-- 
+1.9.1
+

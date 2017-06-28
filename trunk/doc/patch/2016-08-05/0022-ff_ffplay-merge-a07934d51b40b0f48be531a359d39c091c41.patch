@@ -1,0 +1,64 @@
+From ea7f6dcbc7f32781b40258201e58ff525885f55f Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 18:32:21 +0800
+Subject: [PATCH 22/73] ff_ffplay: merge:
+ a07934d51b40b0f48be531a359d39c091c414643
+
+    ffplay: fix silence insertion on error or pause
+
+    Insertion of silence was a bit broken since
+    df34b700981de606ca4847e1ed0bfdf9ac3e9104 because the info whether or not the
+    source buffer supposed to be silence must be kept between callbacks. Failing
+ to
+    do so causes rogue samples from the last buffer to be presented, I guess eve
+n a
+    crash can occur under some circumstances.
+
+    This patch uses a NULL audio_buf to keep the silence state across audio
+    callbacks.
+
+    Reviewed-by: Lukasz Marek <lukasz.m.luki2 at gmail.com>
+    Signed-off-by: Marton Balint <cus@passwd.hu>
+---
+ ijkmedia/ijkplayer/ff_ffplay.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 0a72f07..3301c67 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -2039,7 +2039,7 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
+ {
+     FFPlayer *ffp = opaque;
+     VideoState *is = ffp->is;
+-    int audio_size, len1, silence = 0;
++    int audio_size, len1;
+     if (!ffp || !is) {
+         memset(stream, 0, len);
+         return;
+@@ -2057,7 +2057,7 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
+            audio_size = audio_decode_frame(ffp);
+            if (audio_size < 0) {
+                 /* if error, just output silence */
+-               silence = 1;
++               is->audio_buf = NULL;
+                is->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / is->audio_tgt.frame_size * is->audio_tgt.frame_size;
+            } else {
+                if (is->show_mode != SHOW_MODE_VIDEO)
+@@ -2077,11 +2077,11 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
+         len1 = is->audio_buf_size - is->audio_buf_index;
+         if (len1 > len)
+             len1 = len;
+-        if (!is->muted && !silence && is->audio_volume == SDL_MIX_MAXVOLUME)
++        if (!is->muted && is->audio_buf && is->audio_volume == SDL_MIX_MAXVOLUME)
+             memcpy(stream, (uint8_t *)is->audio_buf + is->audio_buf_index, len1);
+         else {
+             memset(stream, 0, len1);
+-            if (!is->muted && !silence)
++            if (!is->muted && is->audio_buf)
+                 SDL_MixAudio(stream, (uint8_t *)is->audio_buf + is->audio_buf_index, len1, is->audio_volume);
+         }
+         len -= len1;
+-- 
+1.9.1
+

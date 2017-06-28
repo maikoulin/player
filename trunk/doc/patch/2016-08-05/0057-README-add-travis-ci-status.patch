@@ -1,0 +1,27 @@
+From 39cee277fe6d5321cb8ff23e704115d2b283a667 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 15 Jul 2016 16:29:03 +0800
+Subject: [PATCH 57/73] README: add travis-ci status
+
+---
+ README.md | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index a94283e..16e4a7d 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,9 @@
+-# ijkplayer [![Build Status](https://travis-ci.org/Bilibili/ijkplayer.svg?branch=master)](https://travis-ci.org/Bilibili/ijkplayer)
++# ijkplayer
++
++ Platform | Build Status
++ -------- | ------------
++ Android | [![Build Status](https://travis-ci.org/bbcallen/ci-ijk-ffmpeg-android.svg?branch=master)](https://travis-ci.org/bbcallen/ci-ijk-ffmpeg-android)
++ iOS | [![Build Status](https://travis-ci.org/bbcallen/ci-ijk-ffmpeg-ios.svg?branch=master)](https://travis-ci.org/bbcallen/ci-ijk-ffmpeg-ios)
+ 
+ Video player based on [ffplay](http://ffmpeg.org)
+ 
+-- 
+1.9.1
+

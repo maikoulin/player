@@ -1,0 +1,24 @@
+From 36a5c549bb962b70202b5e89ab3ad08a7fb7ee18 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Tue, 26 Jul 2016 12:57:22 +0800
+Subject: [PATCH 69/73] android/ffmpeg: remove uncessary head
+
+---
+ android/contrib/tools/do-compile-ffmpeg.sh | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/android/contrib/tools/do-compile-ffmpeg.sh b/android/contrib/tools/do-compile-ffmpeg.sh
+index 5aaf440..860543a 100755
+--- a/android/contrib/tools/do-compile-ffmpeg.sh
++++ b/android/contrib/tools/do-compile-ffmpeg.sh
+@@ -301,7 +301,6 @@ else
+     ./configure $FF_CFG_FLAGS \
+         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
+         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS"
+-    head config.log
+     make clean
+ fi
+ 
+-- 
+1.9.1
+

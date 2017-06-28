@@ -1,0 +1,25 @@
+From 0a66a7f00c86d96ff4dbd8bea64d2eae79812827 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 11 Jul 2016 15:46:17 +0800
+Subject: [PATCH 14/73] gles2/render: reload vertices after frame size changed
+
+---
+ ijkmedia/ijksdl/gles2/renderer.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/ijkmedia/ijksdl/gles2/renderer.c b/ijkmedia/ijksdl/gles2/renderer.c
+index 7d8ea37..472c60b 100644
+--- a/ijkmedia/ijksdl/gles2/renderer.c
++++ b/ijkmedia/ijksdl/gles2/renderer.c
+@@ -386,6 +386,8 @@ GLboolean IJK_GLES2_Renderer_renderOverlay(IJK_GLES2_Renderer *renderer, SDL_Vou
+             renderer->frame_height  = visible_height;
+             renderer->frame_sar_num = overlay->sar_num;
+             renderer->frame_sar_den = overlay->sar_den;
++
++            renderer->vertices_changed = 1;
+         }
+ 
+         renderer->last_buffer_width = renderer->func_getBufferWidth(renderer, overlay);
+-- 
+1.9.1
+

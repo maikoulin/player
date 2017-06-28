@@ -1,0 +1,28 @@
+From 07b17d1cce1dac1e3502df88b469fc17476b44aa Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Thu, 14 Jul 2016 16:45:15 +0800
+Subject: [PATCH 51/73] android/MediaCodec: fix possible memory leak
+
+---
+ .../ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c   | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+index b8e10ff..248a4f8 100644
+--- a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
++++ b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+@@ -449,8 +449,10 @@ static int feed_input_buffer(JNIEnv *env, IJKFF_Pipenode *node, int64_t timeUs,
+                 avcodec_parameters_to_context(new_avctx, opaque->codecpar);
+                 av_freep(&new_avctx->extradata);
+                 new_avctx->extradata = av_mallocz(size_data_size);
+-                if (!new_avctx->extradata)
++                if (!new_avctx->extradata) {
++                    avcodec_free_context(&new_avctx);
+                     return AVERROR(ENOMEM);
++                }
+                 memcpy(new_avctx->extradata, size_data, size_data_size);
+                 new_avctx->extradata_size = size_data_size;
+ 
+-- 
+1.9.1
+

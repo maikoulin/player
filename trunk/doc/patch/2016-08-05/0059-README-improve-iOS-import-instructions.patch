@@ -1,0 +1,52 @@
+From 5e46dc5a3b4d43b092c0aeb77be5b33960a5ff3e Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 15 Jul 2016 18:24:42 +0800
+Subject: [PATCH 59/73] README: improve iOS import instructions
+
+---
+ README.md | 29 +++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index 4a67464..3fc0683 100644
+--- a/README.md
++++ b/README.md
+@@ -185,8 +185,33 @@ cd ios
+ ./compile-ffmpeg.sh clean
+ ./compile-ffmpeg.sh all
+ 
+-# import ios/IJKMediaPlayer for MediaPlayer.framework-like interface (recommended)
+-# open ios/IJKMediaDemo/IJKMediaDemo.xcodeproj with Xcode
++# Demo
++#     open ios/IJKMediaDemo/IJKMediaDemo.xcodeproj with Xcode
++# 
++# Import into Your own Application
++#     Select your project in Xcode.
++#     File -> Add Files to ... -> Select ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj
++#     Select your Application's target.
++#     Build Phases -> Target Dependencies -> Select IJKMediaFramework
++#     Build Phases -> Link Binary with Libraries -> Add:
++#         IJKMediaFramework.framework
++#
++#         AudioToolbox.framework
++#         AVFoundation.framework
++#         CoreGraphics.framework
++#         CoreMedia.framework
++#         CoreVideo.framework
++#         libbz2.dylib
++#         libz.dylib
++#         MediaPlayer.framework
++#         MobileCoreServices.framework
++#         OpenGLES.framework
++#         QuartzCore.framework
++#         UIKit.framework
++#         VideoToolbox.framework
++#
++#         ... (Maybe something else, if you get any link error)
++# 
+ ```
+ 
+ 
+-- 
+1.9.1
+

@@ -1,0 +1,109 @@
+From c5c4fb2b21cde12f0827ed675b21f6a10e0076c3 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Wed, 13 Jul 2016 16:23:09 +0800
+Subject: [PATCH 09/73] android/MediaCodec: rename
+ SDL_AMediaCodec_FakeFifo_queue to SDL_AMediaCodec_FakeFifo_queueInputBuffer
+
+---
+ ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec.c         | 8 ++++----
+ ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_dummy.c   | 4 ++--
+ .../ijksdl/android/ijksdl_codec_android_mediacodec_internal.c     | 4 ++--
+ .../ijksdl/android/ijksdl_codec_android_mediacodec_internal.h     | 4 ++--
+ 4 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec.c b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec.c
+index 75a3ca4..4a7aaa9 100644
+--- a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec.c
++++ b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec.c
+@@ -171,7 +171,7 @@ sdl_amedia_status_t SDL_AMediaCodec_queueInputBuffer(SDL_AMediaCodec* acodec, si
+ {
+     assert(acodec->func_queueInputBuffer);
+     if (flags & AMEDIACODEC__BUFFER_FLAG_FAKE_FRAME) {
+-        return SDL_AMediaCodec_FakeFifo_queue(&acodec->common->fake_fifo, idx, offset, size, time, flags);
++        return SDL_AMediaCodec_FakeFifo_queueInputBuffer(&acodec->common->fake_fifo, idx, offset, size, time, flags);
+     }
+ 
+     return acodec->func_queueInputBuffer(acodec, idx, offset, size, time, flags);
+@@ -272,13 +272,13 @@ void SDL_AMediaCodecFake_flushFakeFrames(SDL_AMediaCodec* acodec)
+ 
+ sdl_amedia_status_t SDL_AMediaCodecFake_queueFakeFrame(SDL_AMediaCodec* acodec, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags)
+ {
+-    return SDL_AMediaCodec_FakeFifo_queue(&acodec->common->fake_fifo, idx, offset, size, time, flags);
++    return SDL_AMediaCodec_FakeFifo_queueInputBuffer(&acodec->common->fake_fifo, idx, offset, size, time, flags);
+ }
+ 
+ ssize_t SDL_AMediaCodecFake_dequeueOutputBuffer(SDL_AMediaCodec* acodec, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs)
+ {    
+     if (SDL_AMediaCodec_FakeFifo_size(&acodec->common->fake_fifo) > 0) {
+-        ssize_t ret = SDL_AMediaCodec_FakeFifo_dequeue(&acodec->common->fake_fifo, info, 0);
++        ssize_t ret = SDL_AMediaCodec_FakeFifo_dequeueOutputBuffer(&acodec->common->fake_fifo, info, 0);
+         if (ret >= 0)
+             return ret;
+     }
+@@ -289,5 +289,5 @@ ssize_t SDL_AMediaCodecFake_dequeueOutputBuffer(SDL_AMediaCodec* acodec, SDL_AMe
+ 
+ ssize_t SDL_AMediaCodecFake_dequeueFakeFrameOnly(SDL_AMediaCodec* acodec, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs)
+ {
+-    return SDL_AMediaCodec_FakeFifo_dequeue(&acodec->common->fake_fifo, info, 0);
++    return SDL_AMediaCodec_FakeFifo_dequeueOutputBuffer(&acodec->common->fake_fifo, info, 0);
+ }
+diff --git a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_dummy.c b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_dummy.c
+index 9e17ea7..282ee3c 100644
+--- a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_dummy.c
++++ b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_dummy.c
+@@ -94,13 +94,13 @@ static ssize_t SDL_AMediaCodecDummy_dequeueInputBuffer(SDL_AMediaCodec* acodec,
+ static sdl_amedia_status_t SDL_AMediaCodecDummy_queueInputBuffer(SDL_AMediaCodec* acodec, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags)
+ {
+     DMY_TRACE("%s", __func__);
+-    return SDL_AMediaCodec_FakeFifo_queue(&acodec->opaque->dummy_fifo, idx, offset, size, time, flags | AMEDIACODEC__BUFFER_FLAG_FAKE_FRAME);
++    return SDL_AMediaCodec_FakeFifo_queueInputBuffer(&acodec->opaque->dummy_fifo, idx, offset, size, time, flags | AMEDIACODEC__BUFFER_FLAG_FAKE_FRAME);
+ }
+ 
+ static ssize_t SDL_AMediaCodecDummy_dequeueOutputBuffer(SDL_AMediaCodec* acodec, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs)
+ {
+     DMY_TRACE("%s", __func__);
+-    return SDL_AMediaCodec_FakeFifo_dequeue(&acodec->opaque->dummy_fifo, info, timeoutUs);
++    return SDL_AMediaCodec_FakeFifo_dequeueOutputBuffer(&acodec->opaque->dummy_fifo, info, timeoutUs);
+ }
+ 
+ static sdl_amedia_status_t SDL_AMediaCodecDummy_releaseOutputBuffer(SDL_AMediaCodec* acodec, size_t idx, bool render)
+diff --git a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.c b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.c
+index 22386f1..5cfbdb7 100644
+--- a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.c
++++ b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.c
+@@ -62,7 +62,7 @@ void SDL_AMediaCodec_FakeFifo_destroy(SDL_AMediaCodec_FakeFifo *fifo)
+     memset(fifo, 0, sizeof(SDL_AMediaCodec_FakeFifo));
+ }
+ 
+-sdl_amedia_status_t SDL_AMediaCodec_FakeFifo_queue(SDL_AMediaCodec_FakeFifo *fifo, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags)
++sdl_amedia_status_t SDL_AMediaCodec_FakeFifo_queueInputBuffer(SDL_AMediaCodec_FakeFifo *fifo, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags)
+ {
+     if (fifo->should_abort)
+         return SDL_AMEDIA_ERROR_UNKNOWN;
+@@ -95,7 +95,7 @@ sdl_amedia_status_t SDL_AMediaCodec_FakeFifo_queue(SDL_AMediaCodec_FakeFifo *fif
+     return SDL_AMEDIA_OK;
+ }
+ 
+-ssize_t SDL_AMediaCodec_FakeFifo_dequeue(SDL_AMediaCodec_FakeFifo *fifo, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs)
++ssize_t SDL_AMediaCodec_FakeFifo_dequeueOutputBuffer(SDL_AMediaCodec_FakeFifo *fifo, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs)
+ {
+     if (fifo->should_abort)
+         return -1;
+diff --git a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.h b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.h
+index fdbfbf7..4ae68e7 100644
+--- a/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.h
++++ b/ijkmedia/ijksdl/android/ijksdl_codec_android_mediacodec_internal.h
+@@ -51,8 +51,8 @@ typedef struct SDL_AMediaCodec_FakeFifo {
+ sdl_amedia_status_t SDL_AMediaCodec_FakeFifo_init(SDL_AMediaCodec_FakeFifo *fifo);
+ void                SDL_AMediaCodec_FakeFifo_abort(SDL_AMediaCodec_FakeFifo *fifo);
+ void                SDL_AMediaCodec_FakeFifo_destroy(SDL_AMediaCodec_FakeFifo *fifo);
+-sdl_amedia_status_t SDL_AMediaCodec_FakeFifo_queue(SDL_AMediaCodec_FakeFifo *fifo, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags);
+-ssize_t             SDL_AMediaCodec_FakeFifo_dequeue(SDL_AMediaCodec_FakeFifo *fifo, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs);
++sdl_amedia_status_t SDL_AMediaCodec_FakeFifo_queueInputBuffer(SDL_AMediaCodec_FakeFifo *fifo, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags);
++ssize_t             SDL_AMediaCodec_FakeFifo_dequeueOutputBuffer(SDL_AMediaCodec_FakeFifo *fifo, SDL_AMediaCodecBufferInfo *info, int64_t timeoutUs);
+ void                SDL_AMediaCodec_FakeFifo_flush(SDL_AMediaCodec_FakeFifo *fifo);
+ int                 SDL_AMediaCodec_FakeFifo_size(SDL_AMediaCodec_FakeFifo *fifo);
+ 
+-- 
+1.9.1
+

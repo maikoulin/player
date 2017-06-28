@@ -1,0 +1,29 @@
+From ce758f99bf5d7bd2cf4faad5626dd426a7d276be Mon Sep 17 00:00:00 2001
+From: yuazhen <zhengyuan10503@gmail.com>
+Date: Mon, 11 Jul 2016 17:38:37 +0800
+Subject: [PATCH 63/73] fix HEVC in mkv
+
+Signed-off-by: Zhang Rui <bbcallen@gmail.com>
+---
+ .../ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c  | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+index 248a4f8..3a4e41f 100644
+--- a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
++++ b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+@@ -170,8 +170,9 @@ static int recreate_format_l(JNIEnv *env, IJKFF_Pipenode *node)
+     SDL_AMediaFormat_deleteP(&opaque->output_aformat);
+     opaque->input_aformat = SDL_AMediaFormatJava_createVideoFormat(env, opaque->mcc.mime_type, opaque->codecpar->width, opaque->codecpar->height);
+     if (opaque->codecpar->extradata && opaque->codecpar->extradata_size > 0) {
+-        if ((opaque->codecpar->codec_id == AV_CODEC_ID_H264 || opaque->codecpar->codec_id == AV_CODEC_ID_HEVC)
+-            && opaque->codecpar->extradata[0] == 1) {
++        if ((opaque->avctx->codec_id == AV_CODEC_ID_H264  && opaque->avctx->extradata[0] == 1)
++            || (opaque->avctx->codec_id == AV_CODEC_ID_HEVC && opaque->avctx->extradata_size > 3
++                && (opaque->avctx->extradata[0] == 1 || opaque->avctx->extradata[1] == 1))) {
+ #if AMC_USE_AVBITSTREAM_FILTER
+             if (opaque->avctx->codec_id == AV_CODEC_ID_H264) {
+                 opaque->bsfc = av_bitstream_filter_init("h264_mp4toannexb");
+-- 
+1.9.1
+

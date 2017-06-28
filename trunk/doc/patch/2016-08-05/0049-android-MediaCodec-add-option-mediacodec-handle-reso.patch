@@ -1,0 +1,69 @@
+From 46eb7dec4f6c478ef81dfb73ed53aa411f834c76 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Wed, 13 Jul 2016 18:56:43 +0800
+Subject: [PATCH 49/73] android/MediaCodec: add option
+ mediacodec-handle-resolution-change
+
+---
+ .../ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c    | 3 ++-
+ ijkmedia/ijkplayer/ff_ffplay_def.h                                     | 3 +++
+ ijkmedia/ijkplayer/ff_ffplay_options.h                                 | 2 ++
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+index 310deb5..b8e10ff 100644
+--- a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
++++ b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+@@ -431,7 +431,8 @@ static int feed_input_buffer(JNIEnv *env, IJKFF_Pipenode *node, int64_t timeUs,
+         d->pkt_temp = d->pkt = pkt;
+         d->packet_pending = 1;
+ 
+-        if (opaque->codecpar->codec_id == AV_CODEC_ID_H264) {
++        if (opaque->ffp->mediacodec_handle_resolution_change &&
++            opaque->codecpar->codec_id == AV_CODEC_ID_H264) {
+             uint8_t  *size_data      = NULL;
+             int       size_data_size = 0;
+             AVPacket *avpkt          = &d->pkt_temp;
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_def.h b/ijkmedia/ijkplayer/ff_ffplay_def.h
+index 6d1161d..cc358ba 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_def.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_def.h
+@@ -621,6 +621,7 @@ typedef struct FFPlayer {
+     int mediacodec_avc;
+     int mediacodec_hevc;
+     int mediacodec_mpeg2;
++    int mediacodec_handle_resolution_change;
+     int mediacodec_auto_rotate;
+ 
+     int opensles;
+@@ -733,12 +734,14 @@ inline static void ffp_reset_internal(FFPlayer *ffp)
+     ffp->videotoolbox                   = 0; // option
+     ffp->vtb_max_frame_width            = 0; // option
+     ffp->vtb_async                      = 0; // option
++    ffp->vtb_handle_resolution_change   = 0; // option
+     ffp->vtb_wait_async                 = 0; // option
+ 
+     ffp->mediacodec_all_videos          = 0; // option
+     ffp->mediacodec_avc                 = 0; // option
+     ffp->mediacodec_hevc                = 0; // option
+     ffp->mediacodec_mpeg2               = 0; // option
++    ffp->mediacodec_handle_resolution_change = 0; // option
+     ffp->mediacodec_auto_rotate         = 0; // option
+ 
+     ffp->opensles                       = 0; // option
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_options.h b/ijkmedia/ijkplayer/ff_ffplay_options.h
+index 0ab8beb..8026974 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_options.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_options.h
+@@ -169,6 +169,8 @@ static const AVOption ffp_context_options[] = {
+         OPTION_OFFSET(mediacodec_hevc),         OPTION_INT(0, 0, 1) },
+     { "mediacodec-mpeg2",                       "MediaCodec: enable MPEG2VIDEO",
+         OPTION_OFFSET(mediacodec_mpeg2),        OPTION_INT(0, 0, 1) },
++    { "mediacodec-handle-resolution-change",                    "MediaCodec: handle resolution change automatically",
++        OPTION_OFFSET(mediacodec_handle_resolution_change),     OPTION_INT(0, 0, 1) },
+     { "opensles",                           "OpenSL ES: enable",
+         OPTION_OFFSET(opensles),            OPTION_INT(0, 0, 1) },
+     
+-- 
+1.9.1
+

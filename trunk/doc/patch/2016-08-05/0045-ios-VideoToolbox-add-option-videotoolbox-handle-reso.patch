@@ -1,0 +1,54 @@
+From c275f6c87942d11d6bb9c76f16743692e57a8811 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 11 Jul 2016 17:41:37 +0800
+Subject: [PATCH 45/73] ios/VideoToolbox: add option
+ videotoolbox-handle-resolution-change
+
+---
+ ijkmedia/ijkplayer/ff_ffplay_def.h                                     | 1 +
+ ijkmedia/ijkplayer/ff_ffplay_options.h                                 | 2 ++
+ .../IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m   | 3 ++-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_def.h b/ijkmedia/ijkplayer/ff_ffplay_def.h
+index a9c52dc..6d1161d 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_def.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_def.h
+@@ -615,6 +615,7 @@ typedef struct FFPlayer {
+     int vtb_max_frame_width;
+     int vtb_async;
+     int vtb_wait_async;
++    int vtb_handle_resolution_change;
+ 
+     int mediacodec_all_videos;
+     int mediacodec_avc;
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_options.h b/ijkmedia/ijkplayer/ff_ffplay_options.h
+index 44c0980..0ab8beb 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_options.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_options.h
+@@ -153,6 +153,8 @@ static const AVOption ffp_context_options[] = {
+         OPTION_OFFSET(vtb_async),           OPTION_INT(0, 0, 1) },
+     { "videotoolbox-wait-async",            "VideoToolbox: call VTDecompressionSessionWaitForAsynchronousFrames()",
+         OPTION_OFFSET(vtb_wait_async),      OPTION_INT(1, 0, 1) },
++    { "videotoolbox-handle-resolution-change",          "VideoToolbox: handle resolution change automatically",
++        OPTION_OFFSET(vtb_handle_resolution_change),    OPTION_INT(0, 0, 1) },
+ 
+     // Android only options
+     { "mediacodec",                             "MediaCodec: enable H264 (deprecated by 'mediacodec-avc')",
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+index bd72263..9a0dd4a 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+@@ -752,7 +752,8 @@ static int decode_video(VideoToolBoxContext* context, AVCodecContext *avctx, AVP
+         return 0;
+     }
+ 
+-    if (context->codecpar->codec_id == AV_CODEC_ID_H264) {
++    if (context->ffp->vtb_handle_resolution_change &&
++        context->codecpar->codec_id == AV_CODEC_ID_H264) {
+         size_data = av_packet_get_side_data(avpkt, AV_PKT_DATA_NEW_EXTRADATA, &size_data_size);
+         if (size_data && size_data_size > AV_INPUT_BUFFER_PADDING_SIZE) {
+             int             got_picture = 0;
+-- 
+1.9.1
+

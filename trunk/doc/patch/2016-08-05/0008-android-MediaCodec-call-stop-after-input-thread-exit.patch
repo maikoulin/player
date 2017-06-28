@@ -1,0 +1,28 @@
+From 48a342dbe2025e1523e2ab5a9b12b82dbf0f4fca Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Tue, 12 Jul 2016 14:32:38 +0800
+Subject: [PATCH 08/73] android/MediaCodec: call stop() after input thread exit
+
+---
+ .../ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+index 32e7349..9fe2b3b 100644
+--- a/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
++++ b/ijkmedia/ijkplayer/android/pipeline/ffpipenode_android_mediacodec_vdec.c
+@@ -889,10 +889,10 @@ fail:
+     if (opaque->acodec) {
+         SDL_VoutAndroid_invalidateAllBuffers(opaque->weak_vout);
+         SDL_LockMutex(opaque->acodec_mutex);
+-        SDL_AMediaCodec_stop(opaque->acodec);
+         SDL_UnlockMutex(opaque->acodec_mutex);
+     }
+     SDL_WaitThread(opaque->enqueue_thread, NULL);
++    SDL_AMediaCodec_stop(opaque->acodec);
+     SDL_AMediaCodec_decreaseReferenceP(&opaque->acodec);
+     ALOGI("MediaCodec: %s: exit: %d", __func__, ret);
+     return ret;
+-- 
+1.9.1
+

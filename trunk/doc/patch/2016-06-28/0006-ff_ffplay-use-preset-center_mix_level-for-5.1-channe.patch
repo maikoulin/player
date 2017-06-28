@@ -1,0 +1,82 @@
+From 022d8425ec633a900b4e8470fec70cfc42cda825 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Sun, 12 Jun 2016 14:16:42 +0800
+Subject: [PATCH 06/14] ff_ffplay: use preset center_mix_level for 5.1 channel
+
+---
+ ijkmedia/ijkplayer/ff_ffplay.c         | 2 ++
+ ijkmedia/ijkplayer/ff_ffplay_def.h     | 3 +++
+ ijkmedia/ijkplayer/ff_ffplay_options.h | 9 ++++++++-
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 4958bb4..5a5cd53 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -1951,6 +1951,8 @@ static int audio_decode_frame(FFPlayer *ffp)
+             return -1;
+         }
+         av_dict_copy(&swr_opts, ffp->swr_opts, 0);
++        if (is->audio_src.channel_layout == AV_CH_LAYOUT_5POINT1)
++            av_opt_set_double(is->swr_ctx, "center_mix_level", ffp->preset_5_1_center_mix_level, 0);
+         av_opt_set_dict(is->swr_ctx, &swr_opts);
+         av_dict_free(&swr_opts);
+         is->audio_src.channel_layout = dec_channel_layout;
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_def.h b/ijkmedia/ijkplayer/ff_ffplay_def.h
+index d4e4986..8384a02 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_def.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_def.h
+@@ -511,6 +511,7 @@ typedef struct FFPlayer {
+     AVDictionary *sws_dict;
+     AVDictionary *player_opts;
+     AVDictionary *swr_opts;
++    AVDictionary *swr_preset_opts;
+ 
+     /* ffplay options specified by the user */
+ #ifdef FFP_MERGE
+@@ -627,6 +628,7 @@ typedef struct FFPlayer {
+     char *iformat_name;
+ 
+     int no_time_adjust;
++    double preset_5_1_center_mix_level;
+ 
+     struct IjkMediaMeta *meta;
+ 
+@@ -662,6 +664,7 @@ inline static void ffp_reset_internal(FFPlayer *ffp)
+     av_dict_free(&ffp->sws_dict);
+     av_dict_free(&ffp->player_opts);
+     av_dict_free(&ffp->swr_opts);
++    av_dict_free(&ffp->swr_preset_opts);
+ 
+     /* ffplay options specified by the user */
+     av_freep(&ffp->input_filename);
+diff --git a/ijkmedia/ijkplayer/ff_ffplay_options.h b/ijkmedia/ijkplayer/ff_ffplay_options.h
+index c5a467a..44c0980 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay_options.h
++++ b/ijkmedia/ijkplayer/ff_ffplay_options.h
+@@ -36,6 +36,12 @@
+     .min = min__, \
+     .max = max__, \
+     .flags = AV_OPT_FLAG_DECODING_PARAM
++#define OPTION_DOUBLE(default__, min__, max__) \
++    .type = AV_OPT_TYPE_DOUBLE, \
++    { .dbl = default__ }, \
++    .min = min__, \
++    .max = max__, \
++    .flags = AV_OPT_FLAG_DECODING_PARAM
+ #define OPTION_CONST(default__) \
+     .type = AV_OPT_TYPE_CONST, \
+     { .i64 = default__ }, \
+@@ -135,7 +141,8 @@ static const AVOption ffp_context_options[] = {
+         OPTION_OFFSET(iformat_name),        OPTION_STR(NULL) },
+     { "no-time-adjust",                     "return player's real time from the media stream instead of the adjusted time",
+         OPTION_OFFSET(no_time_adjust),      OPTION_INT(0, 0, 1) },
+-
++    { "preset-5-1-center-mix-level",        "preset center-mix-level for 5.1 channel",
++        OPTION_OFFSET(preset_5_1_center_mix_level), OPTION_DOUBLE(M_SQRT1_2, -32, 32) },
+ 
+         // iOS only options
+     { "videotoolbox",                       "VideoToolbox: enable",
+-- 
+1.9.1
+

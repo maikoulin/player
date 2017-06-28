@@ -1,0 +1,29 @@
+From dbc43395f6a9678ce7ad2375c82047f74d618498 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 15 Jul 2016 13:09:33 +0800
+Subject: [PATCH 55/73] NEWS.md: update
+
+---
+ NEWS.md | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/NEWS.md b/NEWS.md
+index e1fabc9..78332ee 100644
+--- a/NEWS.md
++++ b/NEWS.md
+@@ -1,6 +1,12 @@
+ tag next
+ --------------------------------
++
++tag k0.6.0
++--------------------------------
+ - openssl: upgrade to 1.0.2h
++- ffmpeg: upgrade to n3.1
++- MediaCodec: add options to enable resolution change.
++- VideoToolbox: add options to enable resolution change.
+ 
+ tag k0.5.1
+ --------------------------------
+-- 
+1.9.1
+

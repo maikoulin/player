@@ -1,0 +1,44 @@
+From 898ff26caaf1ffaab80699cd413a4ca4d27dbed6 Mon Sep 17 00:00:00 2001
+From: Lazy <jingyuanliu0@gmail.com>
+Date: Wed, 20 Jul 2016 13:56:07 +0800
+Subject: [PATCH 65/73] Update README.md
+
+Signed-off-by: Zhang Rui <bbcallen@gmail.com>
+---
+ README.md | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/README.md b/README.md
+index 479f310..d3eb53a 100644
+--- a/README.md
++++ b/README.md
+@@ -102,7 +102,7 @@ rm module.sh
+ ln -s module-default.sh module.sh
+ cd android/contrib
+ # cd ios
+-sh compile-ffmpeg clean
++sh compile-ffmpeg.sh clean
+ ```
+ 
+ - If you prefer less codec/format for smaller binary size (include hevc function)
+@@ -112,7 +112,7 @@ rm module.sh
+ ln -s module-lite-hevc.sh module.sh
+ cd android/contrib
+ # cd ios
+-sh compile-ffmpeg clean
++sh compile-ffmpeg.sh clean
+ ```
+ 
+ - If you prefer less codec/format for smaller binary size (by default)
+@@ -122,7 +122,7 @@ rm module.sh
+ ln -s module-lite.sh module.sh
+ cd android/contrib
+ # cd ios
+-sh compile-ffmpeg clean
++sh compile-ffmpeg.sh clean
+ ```
+ 
+ - For Ubuntu/Debian users.
+-- 
+1.9.1
+

@@ -1,0 +1,88 @@
+From fb89a1b715347a42e9b72e1ce02a9e778b949bf0 Mon Sep 17 00:00:00 2001
+From: yuazhen <zhengyuan10503@gmail.com>
+Date: Tue, 26 Jul 2016 15:23:04 +0800
+Subject: [PATCH 72/73] fix missing abi config in build script, using different
+ commit base for 32bit and 64bit target for compile compatibility
+
+---
+ android/contrib/tools/do-compile-libsoxr.sh |  8 ++++++--
+ init-android-libsoxr.sh                     | 10 +++++++++-
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/android/contrib/tools/do-compile-libsoxr.sh b/android/contrib/tools/do-compile-libsoxr.sh
+index 9ea4215..9a2ed8c 100644
+--- a/android/contrib/tools/do-compile-libsoxr.sh
++++ b/android/contrib/tools/do-compile-libsoxr.sh
+@@ -47,6 +47,7 @@ FF_EXTRA_CFLAGS=
+ FF_EXTRA_LDFLAGS=
+ 
+ FF_CMAKE_ABI=
++FF_CMAKE_EXTRA_FLAGS=
+ 
+ #----- armv7a begin -----
+ if [ "$FF_ARCH" = "armv7a" ]; then
+@@ -54,18 +55,21 @@ if [ "$FF_ARCH" = "armv7a" ]; then
+     FF_SOURCE=$FF_BUILD_ROOT/$FF_BUILD_NAME
+ 
+     FF_CMAKE_ABI="armeabi-v7a with NEON"
++    FF_CMAKE_EXTRA_FLAGS="-DHAVE_WORDS_BIGENDIAN_EXITCODE=1 -DWITH_SIMD=0"
+ 
+ elif [ "$FF_ARCH" = "armv5" ]; then
+     FF_BUILD_NAME=libsoxr-armv5
+     FF_SOURCE=$FF_BUILD_ROOT/$FF_BUILD_NAME
+ 
+     FF_CMAKE_ABI="armeabi"
++    FF_CMAKE_EXTRA_FLAGS="-DHAVE_WORDS_BIGENDIAN_EXITCODE=1 -DWITH_SIMD=0"
+ 
+ elif [ "$FF_ARCH" = "x86" ]; then
+     FF_BUILD_NAME=libsoxr-x86
+     FF_SOURCE=$FF_BUILD_ROOT/$FF_BUILD_NAME
+ 
+     FF_CMAKE_ABI="x86"
++    FF_CMAKE_EXTRA_FLAGS="-DHAVE_WORDS_BIGENDIAN_EXITCODE=1"
+ 
+ elif [ "$FF_ARCH" = "x86_64" ]; then
+     FF_ANDROID_PLATFORM=android-21
+@@ -100,9 +104,9 @@ echo "--------------------"
+ echo "[*] configurate libsoxr"
+ echo "--------------------"
+ cd $FF_CMAKE_BUILD_DIR
+-FF_CMAKE_CFG_FLAGS="-DCMAKE_TOOLCHAIN_FILE=${FF_SOURCE}/android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK -DBUILD_EXAMPLES=0 -DBUILD_LSR_TESTS=0 -DBUILD_SHARED_LIBS=0 -DBUILD_TESTS=0 -DCMAKE_BUILD_TYPE=Release -DHAVE_WORDS_BIGENDIAN_EXITCODE=1 -DWITH_LSR_BINDINGS=0 -DWITH_OPENMP=0 -DWITH_PFFFT=0 -DWITH_SIMD=0"
++FF_CMAKE_CFG_FLAGS="-DCMAKE_TOOLCHAIN_FILE=${FF_SOURCE}/android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK -DBUILD_EXAMPLES=0 -DBUILD_LSR_TESTS=0 -DBUILD_SHARED_LIBS=0 -DBUILD_TESTS=0 -DCMAKE_BUILD_TYPE=Release -DWITH_LSR_BINDINGS=0 -DWITH_OPENMP=0 -DWITH_PFFFT=0"
+ echo "cmake $FF_CMAKE_CFG_FLAGS -DANDROID_ABI=$FF_CMAKE_ABI -DCMAKE_INSTALL_PREFIX=$FF_PREFIX"
+-cmake $FF_CMAKE_CFG_FLAGS -DCMAKE_INSTALL_PREFIX=$FF_PREFIX $FF_SOURCE
++cmake $FF_CMAKE_CFG_FLAGS $FF_CMAKE_EXTRA_FLAGS -DANDROID_ABI=$FF_CMAKE_ABI -DCMAKE_INSTALL_PREFIX=$FF_PREFIX $FF_SOURCE
+ 
+ 
+ #--------------------
+diff --git a/init-android-libsoxr.sh b/init-android-libsoxr.sh
+index 1e611c9..dcddfec 100755
+--- a/init-android-libsoxr.sh
++++ b/init-android-libsoxr.sh
+@@ -18,6 +18,7 @@
+ IJK_LIBSOXR_UPSTREAM=http://git.code.sf.net/p/soxr/code
+ IJK_LIBSOXR_FORK=http://git.code.sf.net/p/soxr/code
+ IJK_LIBSOXR_COMMIT=0.1.2
++IJK_LIBSOXR_COMMIT_64=master
+ IJK_LIBSOXR_LOCAL_REPO=extra/soxr
+ 
+ set -e
+@@ -32,7 +33,14 @@ function pull_fork()
+     sh $TOOLS/pull-repo-ref.sh $IJK_LIBSOXR_FORK android/contrib/libsoxr-$1 ${IJK_LIBSOXR_LOCAL_REPO}
+     cp extra/android-cmake/android.toolchain.cmake android/contrib/libsoxr-$1
+     cd android/contrib/libsoxr-$1
+-    git checkout ${IJK_LIBSOXR_COMMIT} -B ijkplayer
++    case "$1" in
++        arm64|x86_64)
++            git checkout ${IJK_LIBSOXR_COMMIT_64} -B ijkplayer
++            ;;
++        *)
++            git checkout ${IJK_LIBSOXR_COMMIT} -B ijkplayer
++            ;;
++    esac
+     cd -
+ }
+ 
+-- 
+1.9.1
+

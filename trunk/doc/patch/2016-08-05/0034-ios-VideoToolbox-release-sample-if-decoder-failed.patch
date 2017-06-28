@@ -1,0 +1,78 @@
+From aed259ae0d89fc290b650d93d2b93d60b6d523bb Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Thu, 7 Jul 2016 15:54:31 +0800
+Subject: [PATCH 34/73] ios/VideoToolbox: release sample if decoder failed
+
+---
+ .../ijkplayer/ios/pipeline/IJKVideoToolBox.m       | 23 ++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+index b75502b..5cbb3ee 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+@@ -275,16 +275,20 @@ void VTDecoderCallback(void *decompressionOutputRefCon,
+ {
+     @autoreleasepool {
+         VideoToolBoxContext *ctx = (VideoToolBoxContext*)decompressionOutputRefCon;
+-        if (!ctx || (status != noErr)) {
++        if (!ctx)
+             return;
+-        }
+-
+-        FFPlayer   *ffp = ctx->ffp;
+-        VideoState *is  = ffp->is;
+ 
+-        sort_queue *newFrame = (sort_queue *)mallocz(sizeof(sort_queue));
++        FFPlayer   *ffp         = ctx->ffp;
++        VideoState *is          = ffp->is;
++        sort_queue *newFrame    = NULL;
+ 
+         sample_info *sample_info = sourceFrameRefCon;
++        if (!sample_info->is_decoding) {
++            ALOGD("VTB: frame out of date: id=%d\n", sample_info->sample_id);
++            goto failed;
++        }
++
++        newFrame = (sort_queue *)mallocz(sizeof(sort_queue));
+         newFrame->pic.pkt_pts    = sample_info->pts;
+         newFrame->pic.pkt_dts    = sample_info->dts;
+         newFrame->pic.sample_aspect_ratio.num = sample_info->sar_num;
+@@ -300,10 +304,6 @@ void VTDecoderCallback(void *decompressionOutputRefCon,
+             newFrame->pic.pts = newFrame->pic.pkt_dts;
+         }
+ 
+-#ifdef FFP_SHOW_VTB_IN_DECODING
+-        ALOGD("VTB: indecoding: %d\n", ctx->sample_infos_in_decoding);
+-#endif
+-
+         if (ctx->dealloced || is->abort_request || is->viddec.queue->abort_request)
+             goto failed;
+ 
+@@ -530,6 +530,7 @@ int videotoolbox_decode_video_internal(VideoToolBoxContext* context, AVCodecCont
+ 
+         if(context->m_vt_session) {
+             VTDecompressionSessionWaitForAsynchronousFrames(context->m_vt_session);
++            sample_info_flush(context, 1000);
+             VTDecompressionSessionInvalidate(context->m_vt_session);
+             CFRelease(context->m_vt_session);
+             context->m_vt_session = NULL;
+@@ -622,6 +623,7 @@ int videotoolbox_decode_video_internal(VideoToolBoxContext* context, AVCodecCont
+         }
+         if (status == kVTVideoDecoderMalfunctionErr) {
+             context->recovery_drop_packet = true;
++            context->refresh_session = true;
+         }
+         goto failed;
+     }
+@@ -691,6 +693,7 @@ int videotoolbox_decode_video(VideoToolBoxContext* context, AVCodecContext *avct
+         int ret = 0;
+         if (context->m_vt_session) {
+             VTDecompressionSessionWaitForAsynchronousFrames(context->m_vt_session);
++            sample_info_flush(context, 1000);
+             VTDecompressionSessionInvalidate(context->m_vt_session);
+             CFRelease(context->m_vt_session);
+         }
+-- 
+1.9.1
+

@@ -1,0 +1,26 @@
+From 36f37d9c241e41aef0d33ff8b4a0c8514486daa5 Mon Sep 17 00:00:00 2001
+From: chodison <c_soft_dev@163.com>
+Date: Sun, 26 Jun 2016 11:04:25 +0800
+Subject: [PATCH 14/14] android/mediacodec: fix log typo.
+
+Signed-off-by: Zhang Rui <bbcallen@gmail.com>
+---
+ ijkmedia/ijksdl/android/ijksdl_vout_overlay_android_mediacodec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijksdl/android/ijksdl_vout_overlay_android_mediacodec.c b/ijkmedia/ijksdl/android/ijksdl_vout_overlay_android_mediacodec.c
+index 0d1a9ed..8e8b0b8 100644
+--- a/ijkmedia/ijksdl/android/ijksdl_vout_overlay_android_mediacodec.c
++++ b/ijkmedia/ijksdl/android/ijksdl_vout_overlay_android_mediacodec.c
+@@ -68,7 +68,7 @@ static void overlay_unref(SDL_VoutOverlay *overlay)
+ 
+ static void overlay_free_l(SDL_VoutOverlay *overlay)
+ {
+-    AMCTRACE("SDL_Overlay(ffmpeg): overlay_free_l(%p)\n", overlay);
++    AMCTRACE("SDL_Overlay(mediacodec): overlay_free_l(%p)\n", overlay);
+     if (!overlay)
+         return;
+ 
+-- 
+1.9.1
+

@@ -1,0 +1,65 @@
+Entries are sorted chronologically from oldest to youngest within each release,
+releases are sorted from youngest to oldest.
+
+version <next>:
+
+
+version 1.2:
+- 优化rmvb视频在播放后退出重新继续播放时，高概率花屏问题，rmvb在ffmpeg的新版本使用了多线程解码，但是存在bug，目前暂时关闭处理
+- 优化hls的seek操作查询ts分片不准确问题
+- 优化增加直播播放列表更新失败时尝试2次
+- 优化直播结束时不上报complete事件，而是发送EOF的error事件
+- 优化部分视频AAC音频无声音问题
+- 优化缩减视频刚载入时进行的缓冲总时间，默认最高可达10s，太长，影响了视频载入时间
+- 优化缩短mp4视频头信息的加载时间，减少mp4的载入时间
+- 优化视频加载过程中用户切换视频导致的anr问题，主要通过增加用户的中断回调操作退出当前比较耗时的过程，避免因为退出时间过长引起UI的ANR
+- 优化播放缓冲上报百分比
+- 修复部分高清视频第一次加载过程中概率会出现屏幕花掉bug
+
+
+
+
+version 1.2:
+- 修复部分ts流包含mp3音频的播放无声音bug
+- 细化MEDIA_ERROR_TIMED_OUT错误类型的具体错误码，便于以后的错误码跟踪分析
+- 开启支持所有h264的profile
+- 开启支持ac3/dts音频格式
+- 优化m3u8访问ts流分片失败后的重试次数，改为最多尝试后面5个分片，而不是原来的尝试所有剩余分片流
+- 修复播放回看时个别场景无法上报MEDIA_ERROR_TIMED_OUT错误的bug
+- 修复播放回看时无法上报播放完成事件bug
+- 优化只针对omx.amlogic的解码器类型进行视频渲染延迟最多达150ms，解决高概率刚开始播放花屏问题
+- 修复硬解时非常规快速操作出现的控制针crash问题
+- 取消优先选择h264 video stream如果存在多个video stream时候，因为h264视频流不一定是最佳的
+- 修复avi格式视频播放完成后无法自动切换播放下一集bug,wordaroud方式， 判断当前音频是否播放完成（video播放状态出异常）
+- 修复mpeg4 mediacodec硬解码时个别视频的音视频无法同步问题
+- 修复mpeg4 ffmpeg软解码时个别视频的音视频无法同步问题（B帧的stream copy 导致，适当折中优化）
+- 优化动态增加视频的开始探测数据，修复默认的5M探测数据不够导致无声音bug
+- 优化AVI格式的交错、非交错存储模式的判断，如果交错视频判断为非交错模式，会导致播放过程中不断发起网络请求造成播放卡顿
+
+
+
+
+version 1.1:
+- tcp_read函数里，poll探测timeout时间设置为3s，避免死循环（poll状态异常）
+- mpeg4在MediaCodec硬解时，需要传递extradata到MediaCodec的Csd-0里，否则会出现刚开始播放花屏问题
+- 取消seek操作的500ms延迟，快速seek的bug由app逻辑层优化处理
+- 视频源无法访问时上报MEDIA_ERROR_TIMED_OUT事件，供上面逻辑层进行重连处理
+- Wordaround方式，视频渲染延迟最多达150ms,解决视频高概率刚开始播放花屏问题（硬解码时，渲染区域的尺寸刚开始出现抖动导致）
+- 优化加速mpegts流的加载时间
+- 修复rmvb seek后花屏问题，seek后获取数据如果是B帧需要丢弃，因为没有参考帧，无法还原图形数据
+- 修改onError的arg1参数，直接设置为错误类型，保持与MediaPlayer的错误上报机制一致
+- 优化加速rmvb的seek时间
+- 
+
+
+
+version 1.0:
+- 增加支持mpeg4的MediaCodec硬解
+- Workaround方式延迟200ms出声音，解决视频刚开始播放时“滋滋”声
+- 修复hls的find_timestamp_in_playlist函数查找timestamp逻辑错误，解决m3u8流seek操作后加载慢问题
+- 选择第一个音轨，当出现存在多个音轨的时候
+- 开启ffmpeg的http的reconnect功能，解决如长时间暂停后继续播放tcp连接断开异常。
+- 升级到ffmpeg3.1
+- hls流EOF后，需要上报MEDIA_ERROR_TIMED_OUT事件，避免播放完成后卡屏
+- seek操作延迟入队500ms延迟处理，解决多次seek操作bug
+- ffmpeg模块裁剪

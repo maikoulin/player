@@ -1,0 +1,118 @@
+From e65e8f8f76fd46d3c8ca0fe99472128c9a4f1a40 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 20:24:05 +0800
+Subject: [PATCH 32/73] android: disable IMediaDataSrouce for now
+
+---
+ ijkmedia/ijkplayer/Android.mk                      |  8 +-----
+ ijkmedia/ijkplayer/android/ijkplayer_jni.c         |  2 +-
+ ijkmedia/ijkplayer/ijkavformat/allformats.c        |  2 +-
+ ijkmedia/ijkplayer/ijkavformat/url.h               | 29 ----------------------
+ .../IJKMediaPlayer.xcodeproj/project.pbxproj       |  2 --
+ 5 files changed, 3 insertions(+), 40 deletions(-)
+ delete mode 100644 ijkmedia/ijkplayer/ijkavformat/url.h
+
+diff --git a/ijkmedia/ijkplayer/Android.mk b/ijkmedia/ijkplayer/Android.mk
+index e5df339..68bc46f 100644
+--- a/ijkmedia/ijkplayer/Android.mk
++++ b/ijkmedia/ijkplayer/Android.mk
+@@ -51,14 +51,8 @@ LOCAL_SRC_FILES += android/pipeline/ffpipeline_android.c
+ LOCAL_SRC_FILES += android/pipeline/ffpipenode_android_mediacodec_vdec.c
+ 
+ LOCAL_SRC_FILES += ijkavformat/allformats.c
+-LOCAL_SRC_FILES += ijkavformat/async.c
+-LOCAL_SRC_FILES += ijkavformat/ijkinject.c
+ LOCAL_SRC_FILES += ijkavformat/ijklivehook.c
+-LOCAL_SRC_FILES += ijkavformat/ijklongurl.c
+-LOCAL_SRC_FILES += ijkavformat/ijkmediadatasource.c
+-LOCAL_SRC_FILES += ijkavformat/ijksegment.c
+-LOCAL_SRC_FILES += ijkavformat/ijkurlhook.c
+-LOCAL_SRC_FILES += ijkavformat/utils.c
++# LOCAL_SRC_FILES += ijkavformat/ijkmediadatasource.c
+ 
+ LOCAL_SHARED_LIBRARIES := ijkffmpeg ijksdl
+ LOCAL_STATIC_LIBRARIES := android-ndk-profiler
+diff --git a/ijkmedia/ijkplayer/android/ijkplayer_jni.c b/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+index 4e75b3f..8c99eae 100644
+--- a/ijkmedia/ijkplayer/android/ijkplayer_jni.c
++++ b/ijkmedia/ijkplayer/android/ijkplayer_jni.c
+@@ -36,7 +36,7 @@
+ #include "ijkplayer_android.h"
+ #include "ijksdl/android/ijksdl_android_jni.h"
+ #include "ijksdl/android/ijksdl_codec_android_mediadef.h"
+-#include "ijkplayer/ijkavformat/ijkavformat.h"
++#include "libavformat/ijkavformat.h"
+ 
+ #define JNI_MODULE_PACKAGE      "tv/danmaku/ijk/media/player"
+ #define JNI_CLASS_IJKPLAYER     "tv/danmaku/ijk/media/player/IjkMediaPlayer"
+diff --git a/ijkmedia/ijkplayer/ijkavformat/allformats.c b/ijkmedia/ijkplayer/ijkavformat/allformats.c
+index d649b64..9bbc663 100644
+--- a/ijkmedia/ijkplayer/ijkavformat/allformats.c
++++ b/ijkmedia/ijkplayer/ijkavformat/allformats.c
+@@ -67,7 +67,7 @@ void ijkav_register_all(void)
+     /* protocols */
+     av_log(NULL, AV_LOG_INFO, "===== custom modules begin =====\n");
+ #ifdef __ANDROID__
+-    IJK_REGISTER_PROTOCOL(ijkmediadatasource);
++    // IJK_REGISTER_PROTOCOL(ijkmediadatasource);
+ #endif
+ 
+     /* demuxers */
+diff --git a/ijkmedia/ijkplayer/ijkavformat/url.h b/ijkmedia/ijkplayer/ijkavformat/url.h
+deleted file mode 100644
+index c216065..0000000
+--- a/ijkmedia/ijkplayer/ijkavformat/url.h
++++ /dev/null
+@@ -1,29 +0,0 @@
+-/*
+- * url.h
+- *
+- * Copyright (c) 2003 Fabrice Bellard
+- * Copyright (c) 2013 Zhang Rui <bbcallen@gmail.com>
+- *
+- * This file is part of ijkPlayer.
+- *
+- * ijkPlayer is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * ijkPlayer is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with ijkPlayer; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+- */
+-
+-#ifndef FFPLAY__IJKAVFORMAT_URL_H
+-#define FFPLAY__IJKAVFORMAT_URL_H
+-
+-#include "libavformat/url.h"
+-
+-#endif
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj b/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj
+index 891a1b6..ff9a134 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer.xcodeproj/project.pbxproj
+@@ -174,7 +174,6 @@
+ 		E68B7AC41C1E7F20001DE241 /* IJKSDLHudViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IJKSDLHudViewController.m; sourceTree = "<group>"; };
+ 		E68B7ACD1C1E97B0001DE241 /* IJKSDLHudViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJKSDLHudViewCell.h; sourceTree = "<group>"; };
+ 		E68B7ACE1C1E97B0001DE241 /* IJKSDLHudViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IJKSDLHudViewCell.m; sourceTree = "<group>"; };
+-		E69007F11B96E2A600EB346D /* url.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = url.h; sourceTree = "<group>"; };
+ 		E6903EC017EAF6C500CFD954 /* IJKMediaPlayer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IJKMediaPlayer-Prefix.pch"; sourceTree = "<group>"; };
+ 		E6903EC117EAF6C500CFD954 /* IJKMediaPlayback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IJKMediaPlayback.h; path = IJKMediaPlayer/IJKMediaPlayback.h; sourceTree = "<group>"; };
+ 		E6903FD517EAFC6100CFD954 /* ff_cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ff_cmdutils.c; sourceTree = "<group>"; };
+@@ -590,7 +589,6 @@
+ 			children = (
+ 				E69BE54A1B93FED300AFBA3F /* allformats.c */,
+ 				E69BE5701B946FF600AFBA3F /* ijklivehook.c */,
+-				E69007F11B96E2A600EB346D /* url.h */,
+ 			);
+ 			path = ijkavformat;
+ 			sourceTree = "<group>";
+-- 
+1.9.1
+

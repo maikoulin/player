@@ -1,0 +1,25 @@
+From ed2dbc03ac6cfa11f69ad4a15be42a642d49be4a Mon Sep 17 00:00:00 2001
+From: Xinzheng Zhang <zhangxzheng@gmail.com>
+Date: Tue, 5 Jul 2016 09:58:27 +0800
+Subject: [PATCH 01/73] Update supported iOS version
+
+---
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index 4983627..8d1c377 100644
+--- a/README.md
++++ b/README.md
+@@ -61,7 +61,7 @@ dependencies {
+  - hw-decoder: MediaCodec (API 16+, Android 4.1+)
+  - alternative-backend: android.media.MediaPlayer, ExoPlayer
+ - iOS
+- - platform: iOS 6.0~8.4.x
++ - platform: iOS 6.0~9.3.x
+  - cpu: armv7, arm64, i386, x86_64, (armv7s is obselete)
+  - api: [MediaPlayer.framework-like](ios/IJKMediaPlayer/IJKMediaPlayer/IJKMediaPlayback.h)
+  - video-output: OpenGL ES 2.0
+-- 
+1.9.1
+

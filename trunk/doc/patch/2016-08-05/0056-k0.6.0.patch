@@ -1,0 +1,121 @@
+From e28708feb0ec96b7a701f965b8b43a8a15b1eec9 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 15 Jul 2016 14:12:35 +0800
+Subject: [PATCH 56/73] k0.6.0
+
+---
+ README.md                                    | 18 +++++++++---------
+ android/ijkplayer/build.gradle               |  4 ++--
+ android/ijkplayer/gradle.properties          |  4 ++--
+ android/ijkplayer/ijkplayer-exo/build.gradle |  2 +-
+ version.sh                                   |  4 ++--
+ 5 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/README.md b/README.md
+index 8d1c377..a94283e 100644
+--- a/README.md
++++ b/README.md
+@@ -16,17 +16,17 @@ allprojects {
+ 
+ dependencies {
+     # required, enough for most devices.
+-    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.5.1'
+-    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.5.1'
++    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.6.0'
++    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.6.0'
+ 
+     # Other ABIs: optional
+-    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.5.1'
+-    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.5.1'
+-    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.5.1'
+-    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.5.1'
++    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.6.0'
++    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.6.0'
++    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.6.0'
++    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.6.0'
+ 
+     # ExoPlayer as IMediaPlayer: optional, experimental
+-    compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.5.1'
++    compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.6.0'
+ }
+ ```
+ - iOS
+@@ -136,7 +136,7 @@ sudo dpkg-reconfigure dash
+ ```
+ git clone https://github.com/Bilibili/ijkplayer.git ijkplayer-android
+ cd ijkplayer-android
+-git checkout -B latest k0.5.1
++git checkout -B latest k0.6.0
+ 
+ ./init-android.sh
+ 
+@@ -176,7 +176,7 @@ cd ..
+ ```
+ git clone https://github.com/Bilibili/ijkplayer.git ijkplayer-ios
+ cd ijkplayer-ios
+-git checkout -B latest k0.5.1
++git checkout -B latest k0.6.0
+ 
+ ./init-ios.sh
+ 
+diff --git a/android/ijkplayer/build.gradle b/android/ijkplayer/build.gradle
+index f3eb790..c9ef1bc 100644
+--- a/android/ijkplayer/build.gradle
++++ b/android/ijkplayer/build.gradle
+@@ -26,8 +26,8 @@ ext {
+ 
+     targetSdkVersion = 23
+ 
+-    versionCode = 501000
+-    versionName = "0.5.1"
++    versionCode = 600000
++    versionName = "0.6.0"
+ }
+ 
+ wrapper {
+diff --git a/android/ijkplayer/gradle.properties b/android/ijkplayer/gradle.properties
+index b13fdd7..22ca1ab 100644
+--- a/android/ijkplayer/gradle.properties
++++ b/android/ijkplayer/gradle.properties
+@@ -17,8 +17,8 @@
+ # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
+ # org.gradle.parallel=true
+ 
+-VERSION_NAME=0.5.1
+-VERSION_CODE=501000
++VERSION_NAME=0.6.0
++VERSION_CODE=600000
+ GROUP=tv.danmaku.ijk.media
+ 
+ # http://central.sonatype.org/pages/requirements.html
+diff --git a/android/ijkplayer/ijkplayer-exo/build.gradle b/android/ijkplayer/ijkplayer-exo/build.gradle
+index 180fd9d..b79ecd7 100644
+--- a/android/ijkplayer/ijkplayer-exo/build.gradle
++++ b/android/ijkplayer/ijkplayer-exo/build.gradle
+@@ -28,7 +28,7 @@ dependencies {
+     compile 'com.google.android.exoplayer:exoplayer:r1.5.8'
+ 
+     compile project(':ijkplayer-java')
+-    // compile 'tv.danmaku.ijk.media:ijkplayer-java:0.5.1'
++    // compile 'tv.danmaku.ijk.media:ijkplayer-java:0.6.0'
+ }
+ 
+ gradle.startParameter.taskNames.each { task ->
+diff --git a/version.sh b/version.sh
+index eb8d8dc..8b0dcc4 100755
+--- a/version.sh
++++ b/version.sh
+@@ -2,8 +2,8 @@
+ 
+ set -e
+ 
+-VERSION_CODE=501000
+-VERSION_NAME=0.5.1
++VERSION_CODE=600000
++VERSION_NAME=0.6.0
+ 
+ echo_usage() {
+     echo ""
+-- 
+1.9.1
+

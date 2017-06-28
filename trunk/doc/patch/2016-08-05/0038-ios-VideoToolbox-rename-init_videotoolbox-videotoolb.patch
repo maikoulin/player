@@ -1,0 +1,54 @@
+From 6ac3fb2a6595748cabd69f17573fd97922384592 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 8 Jul 2016 17:10:33 +0800
+Subject: [PATCH 38/73] ios/VideoToolbox: rename init_videotoolbox ->
+ videotoolbox_create
+
+---
+ .../IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h    | 2 +-
+ .../IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m    | 2 +-
+ .../ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h
+index eaed294..78c112d 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h
+@@ -38,7 +38,7 @@
+ 
+ typedef struct VideoToolBoxContext VideoToolBoxContext;
+ 
+-VideoToolBoxContext* init_videotoolbox(FFPlayer* ffp, AVCodecContext* ic);
++VideoToolBoxContext* videotoolbox_create(FFPlayer* ffp, AVCodecContext* ic);
+ 
+ int videotoolbox_decode_frame(VideoToolBoxContext* context);
+ 
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+index 2f4d9d0..a9428c0 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+@@ -922,7 +922,7 @@ int videotoolbox_decode_frame(VideoToolBoxContext* context)
+     return got_frame;
+ }
+ 
+-VideoToolBoxContext* init_videotoolbox(FFPlayer* ffp, AVCodecContext* avctx)
++VideoToolBoxContext* videotoolbox_create(FFPlayer* ffp, AVCodecContext* avctx)
+ {
+     int width           = avctx->width;
+     int height          = avctx->height;
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
+index a4a6757..b3d8f30 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
+@@ -112,7 +112,7 @@ IJKFF_Pipenode *ffpipenode_create_video_decoder_from_ios_videotoolbox(FFPlayer *
+     opaque->avctx = opaque->decoder->avctx;
+     switch (opaque->avctx->codec_id) {
+     case AV_CODEC_ID_H264:
+-        opaque->context = init_videotoolbox(ffp, opaque->avctx);
++        opaque->context = videotoolbox_create(ffp, opaque->avctx);
+         break;
+     default:
+         ALOGI("Videotoolbox-pipeline:open_video_decoder: not H264\n");
+-- 
+1.9.1
+

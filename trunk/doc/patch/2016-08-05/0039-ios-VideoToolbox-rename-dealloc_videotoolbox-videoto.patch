@@ -1,0 +1,53 @@
+From 9b591260236541303aa09dc6a6cd5399f2196a8e Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 8 Jul 2016 17:40:54 +0800
+Subject: [PATCH 39/73] ios/VideoToolbox: rename dealloc_videotoolbox ->
+ videotoolbox_free
+
+---
+ .../IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h    | 2 +-
+ .../IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m    | 2 +-
+ .../ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h
+index 78c112d..b06ffe9 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.h
+@@ -42,6 +42,6 @@ VideoToolBoxContext* videotoolbox_create(FFPlayer* ffp, AVCodecContext* ic);
+ 
+ int videotoolbox_decode_frame(VideoToolBoxContext* context);
+ 
+-void dealloc_videotoolbox(VideoToolBoxContext* context);
++void videotoolbox_free(VideoToolBoxContext* context);
+ 
+ #endif
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+index a9428c0..b233f98 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/IJKVideoToolBox.m
+@@ -835,7 +835,7 @@ static CMFormatDescriptionRef CreateFormatDescriptionFromCodecData(Uint32 format
+         return NULL;
+ }
+ 
+-void dealloc_videotoolbox(VideoToolBoxContext* context)
++void videotoolbox_free(VideoToolBoxContext* context)
+ {
+     context->dealloced = true;
+ 
+diff --git a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
+index b3d8f30..154a313 100644
+--- a/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
++++ b/ios/IJKMediaPlayer/IJKMediaPlayer/ijkmedia/ijkplayer/ios/pipeline/ffpipenode_ios_videotoolbox_vdec.m
+@@ -81,7 +81,7 @@ static int func_run_sync(IJKFF_Pipenode *node)
+     int ret = videotoolbox_video_thread(opaque);
+ 
+     if (opaque->context) {
+-        dealloc_videotoolbox(opaque->context);
++        videotoolbox_free(opaque->context);
+         free(opaque->context);
+         opaque->context = NULL;
+     }
+-- 
+1.9.1
+

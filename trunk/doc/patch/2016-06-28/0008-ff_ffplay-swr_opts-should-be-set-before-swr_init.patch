@@ -1,0 +1,46 @@
+From dd33d188cee71e4c3bbc6b838869a2993395f071 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 13 Jun 2016 15:56:20 +0800
+Subject: [PATCH 08/14] ff_ffplay: swr_opts should be set before swr_init
+
+---
+ ijkmedia/ijkplayer/ff_ffplay.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 3138938..43c5408 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -1942,12 +1942,11 @@ static int audio_decode_frame(FFPlayer *ffp)
+                                          is->audio_tgt.channel_layout, is->audio_tgt.fmt, is->audio_tgt.freq,
+                                          dec_channel_layout,           af->frame->format, af->frame->sample_rate,
+                                          0, NULL);
+-        if (!is->swr_ctx || swr_init(is->swr_ctx) < 0) {
++        if (!is->swr_ctx) {
+             av_log(NULL, AV_LOG_ERROR,
+                    "Cannot create sample rate converter for conversion of %d Hz %s %d channels to %d Hz %s %d channels!\n",
+                     af->frame->sample_rate, av_get_sample_fmt_name(af->frame->format), av_frame_get_channels(af->frame),
+                     is->audio_tgt.freq, av_get_sample_fmt_name(is->audio_tgt.fmt), is->audio_tgt.channels);
+-            swr_free(&is->swr_ctx);
+             return -1;
+         }
+         av_dict_copy(&swr_opts, ffp->swr_opts, 0);
+@@ -1955,6 +1954,15 @@ static int audio_decode_frame(FFPlayer *ffp)
+             av_opt_set_double(is->swr_ctx, "center_mix_level", ffp->preset_5_1_center_mix_level, 0);
+         av_opt_set_dict(is->swr_ctx, &swr_opts);
+         av_dict_free(&swr_opts);
++
++        if (swr_init(is->swr_ctx) < 0) {
++            av_log(NULL, AV_LOG_ERROR,
++                   "Cannot create sample rate converter for conversion of %d Hz %s %d channels to %d Hz %s %d channels!\n",
++                    af->frame->sample_rate, av_get_sample_fmt_name(af->frame->format), av_frame_get_channels(af->frame),
++                    is->audio_tgt.freq, av_get_sample_fmt_name(is->audio_tgt.fmt), is->audio_tgt.channels);
++            swr_free(&is->swr_ctx);
++            return -1;
++        }
+         is->audio_src.channel_layout = dec_channel_layout;
+         is->audio_src.channels       = av_frame_get_channels(af->frame);
+         is->audio_src.freq = af->frame->sample_rate;
+-- 
+1.9.1
+

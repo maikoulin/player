@@ -1,0 +1,72 @@
+From 5748aa18fe4edb09f4b6e07d72c5029021babeaf Mon Sep 17 00:00:00 2001
+From: Xinzheng Zhang <zhangxzheng@gmail.com>
+Date: Tue, 5 Jul 2016 17:05:00 +0800
+Subject: [PATCH 02/73] aout: add callback for get persecond audio callbacks
+
+---
+ ijkmedia/ijkplayer/ff_ffplay.c |  2 +-
+ ijkmedia/ijksdl/ijksdl_aout.c  | 10 ++++++++++
+ ijkmedia/ijksdl/ijksdl_aout.h  |  2 ++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 5f11e80..5d3755c 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -2129,7 +2129,7 @@ static int audio_open(FFPlayer *opaque, int64_t wanted_channel_layout, int wante
+         next_sample_rate_idx--;
+     wanted_spec.format = AUDIO_S16SYS;
+     wanted_spec.silence = 0;
+-    wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(wanted_spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC));
++    wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(wanted_spec.freq / SDL_AoutGetAudioPerSecondCallBacks(ffp->aout)));
+     wanted_spec.callback = sdl_audio_callback;
+     wanted_spec.userdata = opaque;
+     while (SDL_AoutOpenAudio(ffp->aout, &wanted_spec, &spec) < 0) {
+diff --git a/ijkmedia/ijksdl/ijksdl_aout.c b/ijkmedia/ijksdl/ijksdl_aout.c
+index 016a702..5f1d62b 100644
+--- a/ijkmedia/ijksdl/ijksdl_aout.c
++++ b/ijkmedia/ijksdl/ijksdl_aout.c
+@@ -23,6 +23,7 @@
+ 
+ #include "ijksdl_aout.h"
+ #include <stdlib.h>
++#include "ff_ffplay_def.h"
+ 
+ int SDL_AoutOpenAudio(SDL_Aout *aout, const SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
+ {
+@@ -114,3 +115,12 @@ int SDL_AoutGetAudioSessionId(SDL_Aout *aout)
+     return 0;
+ }
+ 
++int SDL_AoutGetAudioPerSecondCallBacks(SDL_Aout *aout)
++{
++    if (aout) {
++        if (aout->func_get_audio_persecond_callbacks) {
++            return aout->func_get_audio_persecond_callbacks(aout);
++        }
++    }
++    return SDL_AUDIO_MAX_CALLBACKS_PER_SEC;
++}
+diff --git a/ijkmedia/ijksdl/ijksdl_aout.h b/ijkmedia/ijksdl/ijksdl_aout.h
+index cad9717..2f9b000 100644
+--- a/ijkmedia/ijksdl/ijksdl_aout.h
++++ b/ijkmedia/ijksdl/ijksdl_aout.h
+@@ -48,6 +48,7 @@ struct SDL_Aout {
+ 
+     // optional
+     void   (*func_set_playback_rate)(SDL_Aout *aout, float playbackRate);
++    int    (*func_get_audio_persecond_callbacks)(SDL_Aout *aout);
+ 
+     // Android only
+     int    (*func_get_audio_session_id)(SDL_Aout *aout);
+@@ -63,6 +64,7 @@ void SDL_AoutFreeP(SDL_Aout **paout);
+ 
+ double SDL_AoutGetLatencySeconds(SDL_Aout *aout);
+ void   SDL_AoutSetDefaultLatencySeconds(SDL_Aout *aout, double latency);
++int    SDL_AoutGetAudioPerSecondCallBacks(SDL_Aout *aout);
+ 
+ // optional
+ void   SDL_AoutSetPlaybackRate(SDL_Aout *aout, float playbackRate);
+-- 
+1.9.1
+

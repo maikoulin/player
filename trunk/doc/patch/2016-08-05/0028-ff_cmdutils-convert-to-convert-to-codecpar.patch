@@ -1,0 +1,34 @@
+From 165380635f9f49f6f75bbd34508e79e7f121de04 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 19:25:08 +0800
+Subject: [PATCH 28/73] ff_cmdutils: convert to convert to codecpar
+
+---
+ ijkmedia/ijkplayer/ff_cmdutils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_cmdutils.c b/ijkmedia/ijkplayer/ff_cmdutils.c
+index 8d67b0f..3695ff8 100644
+--- a/ijkmedia/ijkplayer/ff_cmdutils.c
++++ b/ijkmedia/ijkplayer/ff_cmdutils.c
+@@ -138,7 +138,7 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
+         codec            = s->oformat ? avcodec_find_encoder(codec_id)
+                                       : avcodec_find_decoder(codec_id);
+ 
+-    switch (st->codec->codec_type) {
++    switch (st->codecpar->codec_type) {
+     case AVMEDIA_TYPE_VIDEO:
+         prefix  = 'v';
+         flags  |= AV_OPT_FLAG_VIDEO_PARAM;
+@@ -197,7 +197,7 @@ AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
+         return NULL;
+     }
+     for (i = 0; i < s->nb_streams; i++)
+-        opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codec->codec_id,
++        opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
+                                     s, s->streams[i], NULL);
+     return opts;
+ }
+-- 
+1.9.1
+

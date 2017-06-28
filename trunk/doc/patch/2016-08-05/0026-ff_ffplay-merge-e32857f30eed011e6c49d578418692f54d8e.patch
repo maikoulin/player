@@ -1,0 +1,54 @@
+From af2b2acde2e6baf1712b46ddee5f78188eaf77df Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Mon, 27 Jun 2016 19:10:09 +0800
+Subject: [PATCH 26/73] ff_ffplay: merge:
+ e32857f30eed011e6c49d578418692f54d8e9a5d
+
+    ffplay: ensure that we buffer at least 1 second of content
+
+    In order to do that, we keep track of the total duration of packets in a pac
+ket
+    queue.
+
+    Signed-off-by: Marton Balint <cus@passwd.hu>
+---
+ ijkmedia/ijkplayer/ff_ffplay.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 0a36bc1..4ef8df6 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -167,8 +167,7 @@ static int packet_queue_put_private(PacketQueue *q, AVPacket *pkt)
+     q->last_pkt = pkt1;
+     q->nb_packets++;
+     q->size += pkt1->pkt.size + sizeof(*pkt1);
+-    if (pkt1->pkt.duration > 0)
+-        q->duration += pkt1->pkt.duration;
++    q->duration += pkt1->pkt.duration;
+     /* XXX: should duplicate packet data in DV case */
+     SDL_CondSignal(q->cond);
+     return 0;
+@@ -296,8 +295,7 @@ static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *seria
+                 q->last_pkt = NULL;
+             q->nb_packets--;
+             q->size -= pkt1->pkt.size + sizeof(*pkt1);
+-            if (pkt1->pkt.duration > 0)
+-                q->duration -= pkt1->pkt.duration;
++            q->duration -= pkt1->pkt.duration;
+             *pkt = pkt1->pkt;
+             if (serial)
+                 *serial = pkt1->serial;
+@@ -2370,6 +2368,9 @@ static int stream_has_enough_packets(AVStream *st, int stream_id, PacketQueue *q
+     return stream_id < 0 ||
+            queue->abort_request ||
+            (st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
++#ifdef FFP_MERGE
++           queue->nb_packets > MIN_FRAMES && (!queue->duration || av_q2d(st->time_base) * queue->duration > 1.0);
++#endif
+            queue->nb_packets > min_frames;
+ }
+ 
+-- 
+1.9.1
+

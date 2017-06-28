@@ -1,0 +1,89 @@
+From 86c5ba27fe6b8cd453f1de4ddae4ae7e495c9189 Mon Sep 17 00:00:00 2001
+From: Zhang Rui <bbcallen@gmail.com>
+Date: Fri, 15 Jul 2016 11:20:40 +0800
+Subject: [PATCH 52/73] ijkavformat/ijkmediadatasource: reenable external
+ protocol
+
+---
+ ijkmedia/ijkplayer/Android.mk                       | 2 +-
+ ijkmedia/ijkplayer/ff_ffplay.c                      | 1 +
+ ijkmedia/ijkplayer/ijkavformat/allformats.c         | 9 ++++++++-
+ ijkmedia/ijkplayer/ijkavformat/ijkmediadatasource.c | 2 +-
+ 4 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/ijkmedia/ijkplayer/Android.mk b/ijkmedia/ijkplayer/Android.mk
+index 68bc46f..ad55573 100644
+--- a/ijkmedia/ijkplayer/Android.mk
++++ b/ijkmedia/ijkplayer/Android.mk
+@@ -52,7 +52,7 @@ LOCAL_SRC_FILES += android/pipeline/ffpipenode_android_mediacodec_vdec.c
+ 
+ LOCAL_SRC_FILES += ijkavformat/allformats.c
+ LOCAL_SRC_FILES += ijkavformat/ijklivehook.c
+-# LOCAL_SRC_FILES += ijkavformat/ijkmediadatasource.c
++LOCAL_SRC_FILES += ijkavformat/ijkmediadatasource.c
+ 
+ LOCAL_SHARED_LIBRARIES := ijkffmpeg ijksdl
+ LOCAL_STATIC_LIBRARIES := android-ndk-profiler
+diff --git a/ijkmedia/ijkplayer/ff_ffplay.c b/ijkmedia/ijkplayer/ff_ffplay.c
+index 65a874f..5da4587 100644
+--- a/ijkmedia/ijkplayer/ff_ffplay.c
++++ b/ijkmedia/ijkplayer/ff_ffplay.c
+@@ -3116,6 +3116,7 @@ static void ffp_log_callback_report(void *ptr, int level, const char *fmt, va_li
+     ALOG(ffplv, IJK_LOG_TAG, "%s", line);
+ }
+ 
++int ijkav_register_all(void);
+ void ffp_global_init()
+ {
+     if (g_ffmpeg_global_inited)
+diff --git a/ijkmedia/ijkplayer/ijkavformat/allformats.c b/ijkmedia/ijkplayer/ijkavformat/allformats.c
+index 9bbc663..4c2d18e 100644
+--- a/ijkmedia/ijkplayer/ijkavformat/allformats.c
++++ b/ijkmedia/ijkplayer/ijkavformat/allformats.c
+@@ -23,6 +23,7 @@
+ #include "libavformat/avformat.h"
+ #include "libavformat/url.h"
+ #include "libavformat/version.h"
++#include "libavformat/ijkavformat.h"
+ 
+ #define IJK_REGISTER_DEMUXER(x)                                         \
+     {                                                                   \
+@@ -30,6 +31,12 @@
+         ijkav_register_input_format(&ijkff_##x##_demuxer);              \
+     }
+ 
++#define IJK_REGISTER_PROTOCOL(x)                                        \
++    {                                                                   \
++        extern URLProtocol ijkff_##x##_protocol;                        \
++        ijkav_register_##x##_protocol(&ijkff_##x##_protocol, sizeof(URLProtocol));  \
++    }
++
+ static struct AVInputFormat *ijkav_find_input_format(const char *iformat_name)
+ {
+     AVInputFormat *fmt = NULL;
+@@ -67,7 +74,7 @@ void ijkav_register_all(void)
+     /* protocols */
+     av_log(NULL, AV_LOG_INFO, "===== custom modules begin =====\n");
+ #ifdef __ANDROID__
+-    // IJK_REGISTER_PROTOCOL(ijkmediadatasource);
++    IJK_REGISTER_PROTOCOL(ijkmediadatasource);
+ #endif
+ 
+     /* demuxers */
+diff --git a/ijkmedia/ijkplayer/ijkavformat/ijkmediadatasource.c b/ijkmedia/ijkplayer/ijkavformat/ijkmediadatasource.c
+index 872a8a9..2bc1a93 100644
+--- a/ijkmedia/ijkplayer/ijkavformat/ijkmediadatasource.c
++++ b/ijkmedia/ijkplayer/ijkavformat/ijkmediadatasource.c
+@@ -27,8 +27,8 @@
+ #include "libavutil/log.h"
+ #include "libavutil/opt.h"
+ 
++#include "libavformat/ijkavformat.h"
+ #include "ijkplayer/ijkavutil/opt.h"
+-#include "ijkavformat.h"
+ 
+ #include "j4a/class/tv/danmaku/ijk/media/player/misc/IMediaDataSource.h"
+ #include "ijksdl/android/ijksdl_android_jni.h"
+-- 
+1.9.1
+
